@@ -16,58 +16,178 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+/**
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.clearfix {
+    *zoom: 1;
+}
+
+/* Topcoat custom */
+.topcoat-button--cta,
+.topcoat-text-input, .topcoat-text-input--large {
+    width:inherit;
+    line-height:2.5rem;
+    padding: 0 0.9rem;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.topcoat-text-input, .topcoat-text-input--large {
+    font-family:'Proxima Nova Soft W03 Reg';
+
+}
+.topcoat-button--cta {
+    box-shadow: inset 0 1px rgba(255,255,255,0.2);
+    font-family:'Proxima Nova Soft W03 Medium';
+
+}
+
+/* Gradients */
+.corun-red {
+    background: #ee4036; /* Old browsers */
+    background: -moz-linear-gradient(top, #ee4036 0%, #c3342c 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ee4036), color-stop(100%,#c3342c)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #ee4036 0%,#c3342c 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #ee4036 0%,#c3342c 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #ee4036 0%,#c3342c 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #ee4036 0%,#c3342c 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ee4036', endColorstr='#c3342c',GradientType=0 ); /* IE6-9 */
+    border:0;
+}
+.corun-mint {
+    background: #3dbb7e; /* Old browsers */
+    background: -moz-linear-gradient(top, #3dbb7e 0%, #2a8257 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3dbb7e), color-stop(100%,#2a8257)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #3dbb7e 0%,#2a8257 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #3dbb7e 0%,#2a8257 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #3dbb7e 0%,#2a8257 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #3dbb7e 0%,#2a8257 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3dbb7e', endColorstr='#2a8257',GradientType=0 ); /* IE6-9 */
+    border:0;
+}
+.corun-grey {
+    background: #747474; /* Old browsers */
+background: -moz-linear-gradient(top, #747474 0%, #626262 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#747474), color-stop(100%,#626262)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #747474 0%,#626262 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #747474 0%,#626262 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #747474 0%,#626262 100%); /* IE10+ */
+background: linear-gradient(to bottom, #747474 0%,#626262 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#747474', endColorstr='#626262',GradientType=0 ); /* IE6-9 */
+border:0;
+}
+
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
-
+html {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+}
 body {
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+}
+.copyright {
+    display:block;
+    margin-top:-40px;
+    height:40px;
+    text-align:center;
+    color:#FFF;
+    font-size:10px;
+    font-family:Arial,Helvetica,sans-serif;
+}
+.bg {
+    height:100%;
+    width:100%;
+    margin:0 auto;
+    padding:0;
+    position:absolute;
+    z-index:-9999;
+
+}
+.bg img {
+    width:100%;
+    height:auto;
+    z-index:0;
+}
+.logo {
+    width:85%;
+    max-width:500px;
+    height:auto;
+    margin:0 auto;
+    padding-top:18%;
+    display:block;
+}
+.login-container {
+    background:rgba(0,0,0,0.5);
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    max-width:580px;
+    padding:10px;
+    margin:20px 0 0 0;
+    height:auto;
+    -webkit-box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.9);
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.9);
+}
+.form-element {
+    width:100%;
+    margin:0 0 10px 0;
+    display:block;
+}
+.form-elememt-split {
+    margin:10px 0 0 0;
+    width:48%;
+}
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.form-elememt-split .topcoat-button--cta {
+    width:100%;
+    margin:0;
+    border:0;
+}
+/* Portrait layout (default) */
+
+.app {
+    z-index:1;
+    max-width:640px;
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
-    background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
-    background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
-    background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
-    background-image:-webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0, #A7A7A7),
-        color-stop(0.51, #E4E4E4)
-    );
-    background-attachment:fixed;
-    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
-    font-size:12px;
     height:100%;
-    margin:0px;
-    padding:0px;
-    text-transform:uppercase;
-    width:100%;
+    margin:0 auto;
+    padding:0 10px;
 }
 
-/* Portrait layout (default) */
-.app {
-    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
-    position:absolute;             /* position in the center of the screen */
-    left:50%;
-    top:50%;
-    height:50px;                   /* text area height */
-    width:225px;                   /* text area width */
-    text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
-}
-
-/* Landscape layout (with min-width) */
-@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
-    .app {
-        background-position:left center;
-        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
-        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
-                                      /* offset horizontal: half of image width and text area width */
-    }
-}
 
 h1 {
     font-size:24px;
@@ -95,21 +215,4 @@ h1 {
 .event.received {
     background-color:#4B946A;
     display:none;
-}
-
-@keyframes fade {
-    from { opacity: 1.0; }
-    50% { opacity: 0.4; }
-    to { opacity: 1.0; }
-}
- 
-@-webkit-keyframes fade {
-    from { opacity: 1.0; }
-    50% { opacity: 0.4; }
-    to { opacity: 1.0; }
-}
- 
-.blink {
-    animation:fade 3000ms infinite;
-    -webkit-animation:fade 3000ms infinite;
 }

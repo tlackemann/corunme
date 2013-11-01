@@ -22,17 +22,45 @@
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link type="text/css" rel="stylesheet" href="css/topcoat-mobile-light.css"/>
+        <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/889b1b31-6da9-49d9-b813-02db98c325c7.css"/>
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>Corun.me - Run and get rewarded</title>
     </head>
     <body>
-        <div class="app">
-            <h1>PhoneGap</h1>
+    <div class="bg">
+    <img src="img/bg.png"/>
+    </div>
+        <div class="app clearfix">
+            <img src="img/logo.png" class="logo"/>
+
+            <div class="login-container clearfix">
+                <div class="form-element">
+                    <input type="text" name="email" placeholder="Email" class="topcoat-text-input"/>
+                </div>
+                <div class="form-element">
+                    <input type="password" name="password" placeholder="Password" class="topcoat-text-input"/>
+                </div>
+                <div class="form-element">
+                    <button class="topcoat-button--cta corun-red" >Log In</button>
+                </div>
+
+                <div class="form-elememt-split right">
+                    <button class="topcoat-button--cta corun-grey" >About</button>
+                </div>
+                <div class="form-elememt-split left">
+                    <button class="topcoat-button--cta corun-mint" >Sign Up</button>
+                </div>
+            </div>
+            <!--
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
+            -->
         </div>
+
+        <span class="copyright">CoRun &copy; 2013</span>
         <script type="text/javascript" src="phonegap.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
