@@ -267,6 +267,21 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.network-information/www/network.js",
+        "id": "org.apache.cordova.network-information.network",
+        "clobbers": [
+            "navigator.connection",
+            "navigator.network.connection"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.network-information/www/Connection.js",
+        "id": "org.apache.cordova.network-information.Connection",
+        "clobbers": [
+            "Connection"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [

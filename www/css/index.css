@@ -48,16 +48,20 @@
 .topcoat-button--cta,
 .topcoat-text-input, .topcoat-text-input--large {
     width:inherit;
-    line-height:2.5rem;
     padding: 0 0.9rem;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 .topcoat-text-input, .topcoat-text-input--large {
     font-family:'Proxima Nova Soft W03 Reg';
+    font-size: 1.7rem;
+    padding: 0.0rem 0.9rem;
 
 }
 .topcoat-button--cta {
+    font-size: 1.7rem;
+    line-height: 3.8rem;
+    padding: 0 0.9rem;
     box-shadow: inset 0 1px rgba(255,255,255,0.2);
     font-family:'Proxima Nova Soft W03 Medium';
 
@@ -115,11 +119,10 @@ body {
 }
 .copyright {
     display:block;
-    margin-top:-40px;
-    height:40px;
+    margin-top:40px;
     text-align:center;
     color:#FFF;
-    font-size:10px;
+    font-size:16px;
     font-family:Arial,Helvetica,sans-serif;
 }
 .bg {
@@ -133,15 +136,15 @@ body {
 }
 .bg img {
     width:100%;
-    height:auto;
+    height:100%;
     z-index:0;
 }
 .logo {
-    width:85%;
+    width:100%;
     max-width:500px;
     height:auto;
     margin:0 auto;
-    padding-top:18%;
+    padding-top:15%;
     display:block;
 }
 .login-container {
@@ -149,19 +152,19 @@ body {
     -webkit-border-radius: 3px;
     border-radius: 3px;
     max-width:580px;
-    padding:10px;
-    margin:20px 0 0 0;
+    padding:20px;
+    margin:40px 0 0 0;
     height:auto;
     -webkit-box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.9);
     box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.9);
 }
 .form-element {
     width:100%;
-    margin:0 0 10px 0;
+    margin:0 0 20px 0;
     display:block;
 }
 .form-elememt-split {
-    margin:10px 0 0 0;
+    margin:30px 0 0 0;
     width:48%;
 }
 .left {
@@ -215,4 +218,5 @@ h1 {
 .event.received {
     background-color:#4B946A;
     display:none;
+    height:100px;
 }
