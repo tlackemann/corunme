@@ -1,5 +1,27 @@
-dashboard
+<header class="topcoat-navigation-bar">
+	<h1 class="topcoat-navigation-bar__item app-logo"><img src="img/header-logo.png"/></h1>
+</header>
+<div class="topcoat-tab-bar full">
+   <label class="topcoat-tab-bar__item">
+     <input type="radio" name="topcoat" checked="CHECKED">
+     <a ng-href="#/" class="topcoat-tab-bar__button full"><img src="img/icon-home.png"/></a>
+   </label>
+   <label class="topcoat-tab-bar__item">
+     <input type="radio" name="topcoat">
+     <a class="topcoat-tab-bar__button full"><img src="img/icon-profile.png"/></a>
+   </label>
+   <label class="topcoat-tab-bar__item">
+     <input type="radio" name="topcoat">
+     <a ng-href="#/run" class="topcoat-tab-bar__button full"><img src="img/icon-run.png"/></a>
+   </label>
+   <label class="topcoat-tab-bar__item">
+     <input type="radio" name="topcoat">
+     <a class="topcoat-tab-bar__button full"><img src="img/icon-network.png"/></a>
+   </label>
+   <label class="topcoat-tab-bar__item">
+     <input type="radio" name="topcoat">
+     <a class="topcoat-tab-bar__button full"><img src="img/icon-settings.png"/></a>
+   </label>
+</div>
 
-<form name="create-run" ng-submit="submit()">
-<input type="submit" name="submit" value="Create Run"/>
-</form>
+<a ng-href="#/run">Create a run</a>

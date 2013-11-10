@@ -21,24 +21,27 @@
     <head>
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
         <link type="text/css" rel="stylesheet" href="css/topcoat-mobile-light.css"/>
+        <link type="text/css" rel="stylesheet" href="css/mapbox.css"/>
         <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/889b1b31-6da9-49d9-b813-02db98c325c7.css"/>
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Corun.me - Run and get rewarded</title>
 
     </head>
     <body>
-        <div ng-view></div>
+        <div class="container" ng-view></div>
 
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
-        </div>
-        <script type="text/javascript" src="phonegap.js"></script>
+
+        <script type="text/javascript" src="js/mapbox.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/corun.js"></script>
+        <script type="text/javascript" src="phonegap.js"></script>
         <script type="text/javascript">
+            // Start phonegap
             app.initialize();
+            // Start corun
+            CORUN.init();
         </script>
 
         <script src="js/angular/angular.js"></script>

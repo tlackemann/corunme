@@ -10,11 +10,13 @@ config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvide
   	
   	$routeProvider.
     	when('/', {templateUrl: 'partials/dashboard.html', controller: IndexCtrl}).
+    	when('/run', {templateUrl: 'partials/run.html', controller: RunCtrl}).
 		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserLoginCtrl});
 }]);
 
 corunApp.factory('UserService', [function() {
 	var sdo = {
+		session: '',
 		isLogged: false,
 		username: ''
 	};
