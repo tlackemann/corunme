@@ -88,6 +88,7 @@
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/angular \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/app.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/controllers.js \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/corun.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/directives.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/filters.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/index.js \

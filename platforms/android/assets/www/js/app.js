@@ -22,3 +22,12 @@ corunApp.factory('UserService', [function() {
 	};
 	return sdo;
 }]);
+
+corunApp.factory('MapService', [function() {
+	var sdo = {
+		session: '',
+		isLogged: false,
+		username: ''
+	};
+	return sdo;
+}]);	

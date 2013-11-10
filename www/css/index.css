@@ -224,7 +224,70 @@ h1 {
     background-color:#F2F2F2;
 }
 
+/* CSS3 */
+.fade-out {
+    -webkit-animation: fadeout 0.25s; /* Safari and Chrome */
+            animation: fadeout 0.25s;
+
+    opacity:0!important;
+    display:none!important;
+}
+
+.fade-in {
+    -webkit-animation: fadein 0.25s; /* Safari and Chrome */
+            animation: fadein 0.25s;
+
+    opacity:1!important;
+    display:block!important;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari and Chrome */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+
+@keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+/* Safari and Chrome */
+@-webkit-keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
 /* App */
+#readymenu {
+    opacity:0;
+    display:none;
+    height:46px;
+}
+#readymenu span {
+    color:#FFF;
+    font-weight:bold;
+    display:block;
+    margin:0 auto;
+    padding-top:15px;
+    text-align:center;
+}
+.topcoat-tab-bar {
+    background: #111111; /* Old browsers */
+    background: -moz-linear-gradient(top, #111111 0%, #1a1a1a 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#111111), color-stop(100%,#1a1a1a)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #111111 0%,#1a1a1a 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #111111 0%,#1a1a1a 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #111111 0%,#1a1a1a 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #111111 0%,#1a1a1a 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#111111', endColorstr='#1a1a1a',GradientType=0 ); /* IE6-9 */
+}
 .topcoat-tab-bar__button {  
     -webkit-tap-highlight-color:#FFF;
     box-shadow:inherit;

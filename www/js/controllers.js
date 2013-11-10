@@ -2,45 +2,38 @@
 'use strict';
 
 function RunCtrl($scope, $http, $location, UserService, MapService) {
-    window.CORUN.initMap();
+  window.CORUN.initMap();
 }
 
 function IndexCtrl($scope, $http, $location, UserService) {
-  var User = UserService;
-  User.session = window.CORUN.getCache('user_session');
-  
-  if(!User.session)
-  {
-    $location.path('/login');
-  }
 
-  // Get runs
-  var _feed = window.CORUN.getCache('feed');
-  console.log(_feed);
-  if (_feed == 'false')
-  {
-    $http.get(httpUrl + 'run?session=' + User.session)
-      .success(function(data, status, headers, config) {
-        // Save the next user session
-        User.session = data.corun.data.session;
-        window.CORUN.saveCache('user_session', User.session);
+  // // Get runs
+  // var _feed = window.CORUN.getCache('feed');
 
-        // Save the feed in the cache
-        console.log(data.corun.data);
-        window.CORUN.saveCache('feed', JSON.stringify(data.corun.data.runs));
+  // if (_feed == 'false')
+  // {
+  //   $http.get(httpUrl + 'run?session=' + User.session)
+  //     .success(function(data, status, headers, config) {
+  //       // Save the next user session
+  //       User.session = data.corun.data.session;
+  //       window.CORUN.saveCache('user_session', User.session);
+
+  //       // Save the feed in the cache
+  //       console.log(data.corun.data);
+  //       window.CORUN.saveCache('feed', JSON.stringify(data.corun.data.runs));
         
-        $scope.runs = data.corun.data.runs;
-      })
-      .error(function(data, status, headers, config) {
-        console.log(status);
-        console.log(data);
-      });
-  }
-  else
-  {
-    // _clearCache('feed');
-    $scope.runs = JSON.parse(_feed);
-  }
+  //       $scope.runs = data.corun.data.runs;
+  //     })
+  //     .error(function(data, status, headers, config) {
+  //       console.log(status);
+  //       console.log(data);
+  //     });
+  // }
+  // else
+  // {
+  //   // _clearCache('feed');
+  //   //$scope.runs = JSON.parse(_feed);
+  // }
   // $scope.submit = function() {
   //   var post = {
   //     session: User.session,
@@ -62,44 +55,47 @@ function IndexCtrl($scope, $http, $location, UserService) {
 }
 
 function UserLoginCtrl($scope, $http, $location, UserService) {
-  var User = UserService;
-  if(_getUserSession(User))
-  {
-    $location.path('/');
-  }
+
+  // var User = UserService;
+  // User.session = window.CORUN.getCache('user_session');
   
-  $scope.submit = function() {
-    var formData = {
-      'email' : this.email,
-      'password' : this.password
-    };
-    $http.post(httpUrl + 'login', formData)
-      .success(function(data, status, headers, config) {
-        //console.log(data);  
-        if (data.corun.data.success) {
-          // succefull login
-          User.isLogged = true;
-          User.username = formData.email;
-          User.session = data.corun.data.session;
+  // if(!User.session)
+  // {
+  //   $location.path('/login');
+  // }
+  
+  // $scope.submit = function() {
+  //   var formData = {
+  //     'email' : this.email,
+  //     'password' : this.password
+  //   };
+  //   $http.post(httpUrl + 'login', formData)
+  //     .success(function(data, status, headers, config) {
+  //       //console.log(data);  
+  //       if (data.corun.data.success) {
+  //         // succefull login
+  //         User.isLogged = true;
+  //         User.username = formData.email;
+  //         User.session = data.corun.data.session;
 
-          // Save this shiiiit
-          window.localStorage["user_session"] = User.session;
+  //         // Save this shiiiit
+  //         window.CORUN.setCache('user_session', User.session);
           
-          $location.path('/');
-        }
-        else
-        {
-          User.isLogged = false;
-          User.username = '';
+  //         $location.path('/');
+  //       }
+  //       else
+  //       {
+  //         User.isLogged = false;
+  //         User.username = '';
 
-        }
-      })
-      .error(function(data, status, headers, config) {
-        alert(status);
-        alert(headers);
-        alert(data);
-      });
-  };
+  //       }
+  //     })
+  //     .error(function(data, status, headers, config) {
+  //       alert(status);
+  //       alert(headers);
+  //       alert(data);
+  //     });
+  // };
 }
 
 function RunStoreController($scope, $http, $location, UserService) {
