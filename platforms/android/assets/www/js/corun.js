@@ -12,6 +12,16 @@
  		var self = this;
 
  		/**
+ 		 * How many seconds to wait in between GPS polls (default: 5 seconds)
+ 		 */
+ 		this.runTimeout = 5000,
+
+ 		/**
+ 		 * How many seconds to wait in between GPS poll session saves (default: 1 minute)
+ 		 */
+ 		this.runCacheTimeout = 60000,
+
+ 		/**
  		 * API URL
  		 */
  		this.apiUrl = 'http://192.168.1.8/corunme-api/public/',
@@ -90,6 +100,11 @@
  		 * Protected: Total distance
  		 */
  		this._runDistance = 0.00,
+
+ 		/**
+ 		 * Protected: Run GPS data
+ 		 */
+ 		this._runGpsData = [],
 
  		/**
  		 * Start the application
@@ -304,7 +319,7 @@
  		this.startRunToolbar = function() {
  			this._intervalRunToolbar = setInterval(function() {
  				self._runTime += 1;
- 				document.getElementById(self.readymenuElement).innerHTML = '<span>Distance: 0.00 | Time ' + self._runTime + ' seconds</span>';
+ 				document.getElementById(self.readymenuElement).innerHTML = '<span>Distance: ' + self._runDistance + ' | Time ' + self._runTime + ' seconds</span>';
  			}, 1000);
  			return this;
  		},
@@ -330,14 +345,25 @@
  			this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
  				console.log(position);
 
+ 				self._runGpsData.push(position);
 
+ 				// Store the current in an instance, save every minute
+ 				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
+ 					console.log('Saved run session cache');
+
+ 					self.setCache('run_session', JSON.stringify(self._runGpsData));
+ 					
+ 					var currentCache = JSON.parse(self.getCache('run_session', true));
+
+ 					console.log(currentCache);
+ 				}
  			},
  			function(error) {
  				// On error
  				console.log('code: '    + error.code    + '\n' +
           		'message: ' + error.message + '\n');
 
- 			}, { timeout: 30000 });
+ 			}, { timeout: this.runTimeout });
  		},
 
  		/**
@@ -354,13 +380,15 @@
 		/**
  		 * Get cache
  		 * @param string key
- 		 * @return string
+ 		 * @param boolean json
+ 		 * @return string|json
 		 */
-		this.getCache = function(key) {
+		this.getCache = function(key, json) {
+			if (!json) json = false;
 			if (this.cache[key] !== undefined) {
 				return this.cache[key];
 			}
-			return '';
+			return (json) ? '{}' : '';
 		},
 
 		/**

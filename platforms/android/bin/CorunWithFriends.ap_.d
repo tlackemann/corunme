@@ -108,6 +108,7 @@
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/dashboard.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/login.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run.html \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/settings.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.camera \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.contacts \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.device \

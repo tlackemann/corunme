@@ -5,6 +5,11 @@ function RunCtrl($scope, $http, $location, UserService, MapService) {
   window.CORUN.initMap();
 }
 
+function SettingsCtrl($scope, $http, $location, UserService, MapService) {
+  $scope.mapData = window.CORUN.getCache('run_session');
+
+}
+
 function IndexCtrl($scope, $http, $location, UserService) {
 
   // // Get runs

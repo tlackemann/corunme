@@ -11,6 +11,7 @@ config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvide
   	$routeProvider.
     	when('/', {templateUrl: 'partials/dashboard.html', controller: IndexCtrl}).
     	when('/run', {templateUrl: 'partials/run.html', controller: RunCtrl}).
+    	when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsCtrl}).
 		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserLoginCtrl});
 }]);
 
