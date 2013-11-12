@@ -1,109 +1,117 @@
 
 'use strict';
 
-function RunCtrl($scope, $http, $location, UserService, MapService) {
+function RunCtrl($scope, $http, $location, MapService) {
+  if (!window.CORUN.checkUser())
+  {
+    $location.path('/login');
+  }
+
   window.CORUN.initMap();
+
+  $scope.corunSubmenu = $location.path();
+  console.log($location.path());
+
+  $scope.submit = function() {
+    window.CORUN.stopRun();
+
+    var post = {
+      session: window.CORUN.getUser().session,
+      map_data: window.CORUN.getMapData()
+    }
+    $http.post(window.CORUN.getUrl('run'), post)
+      .success(function(data, status, headers, config) {
+        // Save the new session
+        window.CORUN.setUser(data.corun.data.session);
+        $location.path('/run/edit/' + data.corun.data.run_id);
+      })
+      .error(function(data, status, headers, config) {
+        alert('There was a problem saving your run, please try again');
+      });
+  };
 }
 
 function SettingsCtrl($scope, $http, $location, UserService, MapService) {
-  $scope.mapData = window.CORUN.getCache('run_session');
-
+  if (!window.CORUN.checkUser())
+  {
+    $location.path('/login');
+  }
+  $scope.corunSubmenu = $location.path();
+  $scope.mapData = window.CORUN.getMapData;
+  $scope.userData = window.CORUN.getUser();
+  console.log($location.path());
 }
 
 function IndexCtrl($scope, $http, $location, UserService) {
+  if (!window.CORUN.checkUser())
+  {
+    $location.path('/login');
+  }
+  $scope.corunSubmenu = $location.path();
+  console.log($location.path());
+}
 
-  // // Get runs
-  // var _feed = window.CORUN.getCache('feed');
-
-  // if (_feed == 'false')
-  // {
-  //   $http.get(httpUrl + 'run?session=' + User.session)
-  //     .success(function(data, status, headers, config) {
-  //       // Save the next user session
-  //       User.session = data.corun.data.session;
-  //       window.CORUN.saveCache('user_session', User.session);
-
-  //       // Save the feed in the cache
-  //       console.log(data.corun.data);
-  //       window.CORUN.saveCache('feed', JSON.stringify(data.corun.data.runs));
-        
-  //       $scope.runs = data.corun.data.runs;
-  //     })
-  //     .error(function(data, status, headers, config) {
-  //       console.log(status);
-  //       console.log(data);
-  //     });
-  // }
-  // else
-  // {
-  //   // _clearCache('feed');
-  //   //$scope.runs = JSON.parse(_feed);
-  // }
-  // $scope.submit = function() {
-  //   var post = {
-  //     session: User.session,
-  //     map_data: {0:1, 1:2, 2:3, 3:4}
-  //   }
-  //   $http.post(httpUrl + 'run', post)
-  //     .success(function(data, status, headers, config) {
-  //       _clearCache('feed');
-  //       // Save the next user session
-  //       User.session = data.corun.data.session;
-  //       _saveUserSession(User.session);
-  //       $location.path('/');
-  //     });
-  // };
-  // $http.post(httpUrl + 'run').success(function(response) {
-  //   console.log(response);
-  //   console.log('alright');
-  // });
+function ProfileCtrl($scope, $http, $location, UserService) {
+  if (!window.CORUN.checkUser())
+  {
+    $location.path('/login');
+  }
+  $scope.corunSubmenu = $location.path();
+  console.log($scope.corunSubmenu);
 }
 
 function UserLoginCtrl($scope, $http, $location, UserService) {
 
-  // var User = UserService;
-  // User.session = window.CORUN.getCache('user_session');
-  
-  // if(!User.session)
-  // {
-  //   $location.path('/login');
-  // }
-  
-  // $scope.submit = function() {
-  //   var formData = {
-  //     'email' : this.email,
-  //     'password' : this.password
-  //   };
-  //   $http.post(httpUrl + 'login', formData)
-  //     .success(function(data, status, headers, config) {
-  //       //console.log(data);  
-  //       if (data.corun.data.success) {
-  //         // succefull login
-  //         User.isLogged = true;
-  //         User.username = formData.email;
-  //         User.session = data.corun.data.session;
+  // Submit the login form, set the session when present
+  $scope.user = {};
+  $scope.loginUser = function() {
+    $http({
+      method: 'POST',
+      url: window.CORUN.getUrl('login'),
+      data: $scope.user
+    }).success(function(data, status, headers, config) {
+      // Logged in
+      if (data.corun.data.success == 1) {
+        // Save the user
+        window.CORUN.setUser(data.corun.data.session);
 
-  //         // Save this shiiiit
-  //         window.CORUN.setCache('user_session', User.session);
-          
-  //         $location.path('/');
-  //       }
-  //       else
-  //       {
-  //         User.isLogged = false;
-  //         User.username = '';
+        $location.path('/');
+      }
+      else
+      {
+        console.log("Error: Bad username/password");
+      }
 
-  //       }
-  //     })
-  //     .error(function(data, status, headers, config) {
-  //       alert(status);
-  //       alert(headers);
-  //       alert(data);
-  //     });
-  // };
+      console.log("Success:" + data);
+    })
+    .error(function(data, status, headers, config) {
+      
+     console.log("Error:" + data);
+    });
+  };
 }
 
-function RunStoreController($scope, $http, $location, UserService) {
+function RunEditCtrl($scope, $http, $location, $routeParams) {
+  if (!window.CORUN.checkUser())
+  {
+    $location.path('/login');
+  }
+  // Set the navigation
+  $scope.corunSubmenu = '/run';
+  $scope.hideSubmenu = true;
 
+  // Set the form data
+  var d = new Date();
+  var curMonth = (d.getMonth() + 1);
+  var curYear = d.getFullYear();
+  var curDate = d.getDate();
+  var date = curMonth + "/" + curDate + "/" + curYear;
+  $scope.runForm = {
+    title : 'Run on ' + date,
+    map : window.CORUN.getMapData(true),
+  }
+
+  console.log($routeParams);
+  console.log($location.path());
 }
 

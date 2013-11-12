@@ -12,19 +12,25 @@
  		var self = this;
 
  		/**
- 		 * How many seconds to wait in between GPS polls (default: 5 seconds)
+ 		 * Constants
  		 */
- 		this.runTimeout = 5000,
+ 		var CACHE_KEY_USER = 'user';
+ 		var CACHE_KEY_RUN = 'run';
 
  		/**
- 		 * How many seconds to wait in between GPS poll session saves (default: 1 minute)
+ 		 * How many milliseconds to wait in between GPS polls (default: 10 seconds)
  		 */
- 		this.runCacheTimeout = 60000,
+ 		this.runTimeout = 10000,
+
+ 		/**
+ 		 * How many milliseconds to wait in between GPS poll session saves (default: 10 seconds)
+ 		 */
+ 		this.runCacheTimeout = 10000,
 
  		/**
  		 * API URL
  		 */
- 		this.apiUrl = 'http://192.168.1.8/corunme-api/public/',
+ 		this.apiUrl = 'http://192.168.1.11/corunme-api/public/',
 
  		/**
  		 * Map element ID
@@ -47,9 +53,24 @@
  		this.readymenuElement = 'readymenu',
 
  		/**
+ 		 * Runmenu element id
+ 		 */
+ 		this.runmenuElement = 'runmenu',
+
+ 		/**
  		 * Seconds to wait before starting run
  		 */
  		this.countdownLimit = 3,
+
+ 		/**
+ 		 * Countdown messages
+ 		 */
+ 		this.countdownMessages = [
+ 			'On your mark',
+ 			'Get ready',
+ 			'Set',
+ 			'Go'
+ 		],
 
  		/**
  		 * Map instance
@@ -107,19 +128,90 @@
  		this._runGpsData = [],
 
  		/**
+ 		 * Protected: Corun session constants
+ 		 */
+ 		this._corunSession = false,
+
+ 		/**
  		 * Start the application
  		 * @return CORUN
  		 */
- 		this.init = function() {
+ 		this.init = function(session) {
 
  			// Start the cache instance
  			this.cache = window.localStorage;
+
+ 			// Start the corun session storage
+ 			this._corunSession = (session) ? session : false;
 
  			// Start the listeners
  			this.initUrlListener();
 
  			return this;
  		},
+
+ 		/**
+ 		 * Returns the full API URL
+ 		 * @param string url
+ 		 * @return string
+ 		 */
+ 		this.getUrl = function(url) {
+ 			return this.apiUrl + url;
+ 		},
+
+ 		/**
+ 		 * Checks if a user session is present - used to validated the next server call
+ 		 * @return boolean
+ 		 */
+ 		this.checkUser = function() {
+ 			var session = this.getCache(CACHE_KEY_USER);
+
+ 			if (session !== '') {
+ 				return true;
+ 			}
+ 			else {
+ 				return false;
+ 			}
+ 		},
+
+ 		/**
+ 		 * Gets a users session data
+ 		 * @return object
+ 		 */
+ 		this.getUser = function() {
+ 			if (this.checkUser) {
+ 				return JSON.parse(this.getCache(CACHE_KEY_USER));
+ 			}
+ 		},
+
+ 		/**
+ 		 * Sets a users session data
+ 		 * @param string s; The current session code
+ 		 * @return void
+ 		 */
+ 		this.setUser = function(s) {
+ 			this.setCache(CACHE_KEY_USER, JSON.stringify({ session: s }));
+			return; 			
+ 		}
+
+ 		/**
+ 		 * Gets a users current map data
+ 		 * @param boolean json
+ 		 * @return object
+ 		 */
+ 		this.getMapData = function(json) {
+ 			return (json) ? this.getCache(CACHE_KEY_RUN) : JSON.parse(this.getCache(CACHE_KEY_RUN));
+ 		},
+
+ 		/**
+ 		 * Sets a users current map data
+ 		 * @param string s; The current map data
+ 		 * @return void
+ 		 */
+ 		this.setMapData = function(s) {
+ 			this.setCache(CACHE_KEY_RUN, JSON.stringify(s));
+			return; 			
+ 		}
 
  		/**
  		 * Listen for url changes to load dynamic scripts
@@ -165,12 +257,10 @@
  		},
 
  		/**
- 		 * Test Mapbox function
+ 		 * Star the map listeners
  		 * @return CORUN
  		 */
  		this.initGeoListener = function() {
-		    // Once we've got a position, zoom and center the map
-		    // on it, and add a single marker.
 		    this.map.on('locationfound', function(e) {
 		        self.map.fitBounds(e.bounds);
 
@@ -189,25 +279,16 @@
 		        var marker = self.getElementByClassname('leaflet-marker-icon')[0];
 
  				marker.addEventListener('touchstart', function(e) {
-			        //console.log(e);
 	 				self.startCountdown();
-					//alert(e.changedTouches[0].pageX) // alert pageX coordinate of touch point
-					//e.preventDefault();
 			    });
 
 			    marker.addEventListener('touchend', function(e) {
-			        //console.log(e);
 	 				self.stopCountdown();
-					//alert(e.changedTouches[0].pageX) // alert pageX coordinate of touch point
-					//e.preventDefault();
 			    });
 
 			        self.map.setZoom(15);
 			    });
 
-
-		    // If the user chooses not to allow their location
-		    // to be shared, display an error message.
 		    this.map.on('locationerror', function() {
 		        alert('position could not be found');
 		    });
@@ -222,7 +303,9 @@
  		 */
  		this.initMap = function() {
  			// Start the map
-			this.map = L.mapbox.map(this.mapElement, this.mapboxId);
+			this.map = L.mapbox.map(this.mapElement, this.mapboxId, {
+				zoomControl: false 
+			});
 			
 
 		    if (!navigator.geolocation) {
@@ -247,22 +330,19 @@
 
  			self.startAnimateToolbar();
 
+ 			var readymenu = document.getElementById(self.readymenuElement);
+
+ 			readymenu.innerHTML = '<span>' + self.countdownMessages[0] + '</span>';
+ 			
  			this._countdownInstance = setInterval(function() {
  				++self._countdown;
+ 				
+ 				readymenu.innerHTML = '<span>' + self.countdownMessages[self._countdown] + '</span>';
 
- 				switch(self._countdown) {
- 					case 1:
- 						document.getElementById(self.readymenuElement).innerHTML = '<span>Get ready</span>';
- 						break;
- 					case 2:
- 						document.getElementById(self.readymenuElement).innerHTML = '<span>Get set</span>';
- 						break;
- 					case 3:
- 						document.getElementById(self.readymenuElement).innerHTML = '<span>Go!!</span>';
- 						// Start ther run & running data bar
- 						self.startRun();
- 						self.startRunToolbar();
- 						break;
+ 				if (self._countdown == self.countdownLimit)
+ 				{
+ 					self.startRun();
+					self.startRunToolbar();
  				}
  			}, 1000);
 
@@ -317,9 +397,17 @@
  		 * @return CORUN
  		 */
  		this.startRunToolbar = function() {
+
+ 			var runmenu = document.getElementById(this.runmenuElement);
+ 			if (runmenu.className.indexOf('fade-in') < 0) runmenu.className += ' fade-in';	
+
+ 			var readymenu = document.getElementById(this.readymenuElement);
+ 			if (readymenu.className.indexOf('fade-in') >= 0) readymenu.className = readymenu.className.replace('fade-in','');
+
  			this._intervalRunToolbar = setInterval(function() {
  				self._runTime += 1;
- 				document.getElementById(self.readymenuElement).innerHTML = '<span>Distance: ' + self._runDistance + ' | Time ' + self._runTime + ' seconds</span>';
+ 				document.getElementById('distance').innerHTML = self._runDistance + 'mi';
+ 				document.getElementById('time').innerHTML = self._runTime + 'sec';
  			}, 1000);
  			return this;
  		},
@@ -340,22 +428,21 @@
  		 */
  		this.startRun = function() {
  			console.log('Run started');
-
+ 			// Restart GPS data (for now)
+ 			this._runGpsData = [];
+ 			
  			// Start the geo listener
  			this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
  				console.log(position);
 
  				self._runGpsData.push(position);
 
- 				// Store the current in an instance, save every minute
+ 				// Store the current in localstorage, save every minute
  				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
+
+ 					self.setMapData(self._runGpsData);
  					console.log('Saved run session cache');
-
- 					self.setCache('run_session', JSON.stringify(self._runGpsData));
- 					
- 					var currentCache = JSON.parse(self.getCache('run_session', true));
-
- 					console.log(currentCache);
+ 					console.log(self.getMapData());
  				}
  			},
  			function(error) {
@@ -367,13 +454,32 @@
  		},
 
  		/**
+ 		 * Stops a run
+ 		 * @return CORUN
+ 		 */
+ 		this.stopRun = function() {
+ 			console.log('Stopping run');
+ 			
+ 			this.stopRunToolbar();
+
+ 			navigator.geolocation.clearWatch(this._pgWatchId);
+
+ 			this.setMapData(this._runGpsData);
+
+ 			return this;
+ 		},
+
+ 		/**
  		 * Set cache
  		 * @param string key
  		 * @param string text
  		 * @return CORUN
 		 */
 		this.setCache = function(key, data) {
+			// Set localStorage
 			this.cache[key] = data;
+			// Also define angular session
+			if (this._corunSession) this._corunSession.push({key : data});
 			return this;
 		},
 
@@ -385,7 +491,16 @@
 		 */
 		this.getCache = function(key, json) {
 			if (!json) json = false;
-			if (this.cache[key] !== undefined) {
+			// Check angular first
+			if (this._corunSession) {
+				for(var i in this._corunSession) {
+					var data = this._corunSession[i];
+					if (data[key] !== undefined) {
+						return data[key];
+					}
+				}
+			// Resort to localStorage
+			} else if (this.cache[key] !== undefined) {
 				return this.cache[key];
 			}
 			return (json) ? '{}' : '';
@@ -397,7 +512,15 @@
  		 * @return CORUN
 		 */
 		this.clearCache = function(key) {
-			if (this.cache[key] !== undefined) {
+			if (this._corunSession) {
+				for(var i in this._corunSession) {
+					var data = this._corunSession[i];
+					if (data[key] !== undefined) {
+						data[key];
+					}
+				}
+			// Resort to localStorage
+			} else if (this.cache[key] !== undefined) {
 				this.cache[key] = null;
 			}
 			return this;

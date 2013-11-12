@@ -1,0 +1,18 @@
+<div ng-include src="'partials/_header.html'"></div>
+
+<div id="runedit">
+<form action="/">
+	<fieldset>
+		<label for="name">Name your run</label>
+		<input type="text" ng-model="runForm.title" class="topcoat-text-input full" placeholder="text" value="">
+	</fieldset>
+	<fieldset>
+		<label for="name">Map Data</label>
+		<textarea ng-model="runForm.map"></textarea>
+	</fieldset>
+	
+	<fieldset class="form-actions">
+		<input type="submit" value="Submit" />
+	</fieldset>
+</form>			
+</div>

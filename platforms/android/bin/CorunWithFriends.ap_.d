@@ -105,10 +105,14 @@
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/angular/angular.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/angular/angular.min.js \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/js/angular/version.txt \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/_header.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/dashboard.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/login.html \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/profile.html \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/settings.html \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run/edit.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.camera \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.contacts \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.device \

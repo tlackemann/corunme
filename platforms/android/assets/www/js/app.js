@@ -11,7 +11,9 @@ config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvide
   	$routeProvider.
     	when('/', {templateUrl: 'partials/dashboard.html', controller: IndexCtrl}).
     	when('/run', {templateUrl: 'partials/run.html', controller: RunCtrl}).
+    	when('/run/edit/:id', {templateUrl: 'partials/run/edit.html', controller: RunEditCtrl}).
     	when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsCtrl}).
+    	when('/profile', {templateUrl: 'partials/profile.html', controller: ProfileCtrl}).
 		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserLoginCtrl});
 }]);
 
@@ -32,3 +34,5 @@ corunApp.factory('MapService', [function() {
 	};
 	return sdo;
 }]);	
+
+corunApp.constant('corunSession', []);
