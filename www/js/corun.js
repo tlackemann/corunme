@@ -176,10 +176,15 @@
 
  		/**
  		 * Gets a users session data
+ 		 * @param string field
  		 * @return object
  		 */
- 		this.getUser = function() {
+ 		this.getUser = function(field) {
  			if (this.checkUser) {
+ 				if (field) {
+ 					var cache = JSON.parse(this.getCache(CACHE_KEY_USER));
+ 					return (cache[field] != undefined) ? cache[field] : '';
+ 				}	
  				return JSON.parse(this.getCache(CACHE_KEY_USER));
  			}
  		},
@@ -187,10 +192,18 @@
  		/**
  		 * Sets a users session data
  		 * @param string s; The current session code
+ 		 * @param string field; The field to update specifically
  		 * @return void
  		 */
- 		this.setUser = function(s) {
- 			this.setCache(CACHE_KEY_USER, JSON.stringify({ session: s }));
+ 		this.setUser = function(s, field) {
+ 			if (field)
+ 			{
+
+ 			}
+ 			else
+ 			{
+ 				this.setCache(CACHE_KEY_USER, JSON.stringify( s ));
+ 			}
 			return; 			
  		}
 

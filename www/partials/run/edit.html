@@ -1,7 +1,7 @@
 <div ng-include src="'partials/_header.html'"></div>
 
 <div id="runedit">
-<form action="/">
+<form ng-submit="editRun()">
 	<fieldset>
 		<label for="name">Name your run</label>
 		<input type="text" ng-model="runForm.title" class="topcoat-text-input full" placeholder="text" value="">

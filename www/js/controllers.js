@@ -16,7 +16,7 @@ function RunCtrl($scope, $http, $location, MapService) {
     window.CORUN.stopRun();
 
     var post = {
-      session: window.CORUN.getUser().session,
+      session: window.CORUN.getUser('session'),
       map_data: window.CORUN.getMapData()
     }
     $http.post(window.CORUN.getUrl('run'), post)
@@ -47,6 +47,9 @@ function IndexCtrl($scope, $http, $location, UserService) {
   {
     $location.path('/login');
   }
+
+  console.log(window.CORUN.getUser());
+
   $scope.corunSubmenu = $location.path();
   console.log($location.path());
 }
@@ -57,6 +60,7 @@ function ProfileCtrl($scope, $http, $location, UserService) {
     $location.path('/login');
   }
   $scope.corunSubmenu = $location.path();
+  $scope.user = window.CORUN.getUser();
   console.log($scope.corunSubmenu);
 }
 
@@ -73,7 +77,7 @@ function UserLoginCtrl($scope, $http, $location, UserService) {
       // Logged in
       if (data.corun.data.success == 1) {
         // Save the user
-        window.CORUN.setUser(data.corun.data.session);
+        window.CORUN.setUser(data.corun.data.user);
 
         $location.path('/');
       }
@@ -109,7 +113,34 @@ function RunEditCtrl($scope, $http, $location, $routeParams) {
   $scope.runForm = {
     title : 'Run on ' + date,
     map : window.CORUN.getMapData(true),
+    session: window.CORUN.getUser().session
   }
+
+  $scope.editRun = function() {
+    $http({
+      method: 'PUT',
+      url: window.CORUN.getUrl('run/' + $routeParams.id),
+      data: $scope.runForm
+    }).success(function(data, status, headers, config) {
+      // Logged in
+      if (data.corun.data.success == 1) {
+        // Save the user
+        window.CORUN.setUser(data.corun.data.session, 'session');
+        
+        $location.path('/');
+      }
+      else
+      {
+        console.log("Error: Bad username/password");
+      }
+
+      console.log("Success:" + data);
+    })
+    .error(function(data, status, headers, config) {
+      
+     console.log("Error:" + data);
+    });
+  };
 
   console.log($routeParams);
   console.log($location.path());
