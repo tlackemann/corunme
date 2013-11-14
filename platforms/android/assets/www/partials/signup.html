@@ -1,0 +1,30 @@
+<div class="bg">
+    <img src="img/bg.png"/>
+</div>
+
+<div class="app clearfix">
+    <img src="img/logo.png" class="logo"/>
+
+        <div class="login-container clearfix">
+            <form ng-submit="signupUser()" name="corun-signup" id="signup">
+                <div class="form-element">
+                    <input type="text" ng-model="user.username" name="username" placeholder="Username" class="topcoat-text-input" required/>
+                </div>
+                <div class="form-element">
+                    <input type="text" ng-model="user.email" name="email" placeholder="Email" class="topcoat-text-input" required/>
+                </div>
+                <div class="form-element">
+                    <input type="password" ng-model="user.password" name="password" placeholder="Password" class="topcoat-text-input" required/>
+                </div>
+                <div class="form-element">
+                    <button class="topcoat-button--cta corun-mint" id="submit">Sign Up</button>
+                </div>
+
+            </form>
+            <div class="form-elememt-split right">
+                <button class="topcoat-button--cta corun-red" onclick="window.location = '#/login'">Log In > </button>
+            </div>
+        </div>
+
+<span class="copyright">CoRun &copy; 2013</span>
+</div>
