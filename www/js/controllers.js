@@ -7,7 +7,7 @@ function RunCtrl($scope, $http, $location, MapService) {
     $location.path('/login');
   }
 
-  window.CORUN.initMap();
+  window.CORUN.initMap().mapLocate();
 
   $scope.corunSubmenu = $location.path();
   console.log($location.path());
@@ -22,7 +22,7 @@ function RunCtrl($scope, $http, $location, MapService) {
     $http.post(window.CORUN.getUrl('run'), post)
       .success(function(data, status, headers, config) {
         // Save the new session
-        window.CORUN.setUser(data.corun.data.session);
+        window.CORUN.setUser(data.corun.data);
         $location.path('/run/edit/' + data.corun.data.run_id);
       })
       .error(function(data, status, headers, config) {
@@ -100,9 +100,27 @@ function RunEditCtrl($scope, $http, $location, $routeParams) {
   {
     $location.path('/login');
   }
+
   // Set the navigation
   $scope.corunSubmenu = '/run';
   $scope.hideSubmenu = true;
+  $http({
+      method: 'GET',
+      url: window.CORUN.getUrl('run/' + $routeParams.id),
+      
+  }).success(function(data, status, headers, config) {
+    $scope.run = data.corun.data.run;
+    window.CORUN.setCache('run_edit_' + $scope.run.id, $scope.run);
+    // Start the map
+    window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
+
+    console.log(data);
+  })
+  .error(function(data, status, headers, config) {
+    $scope.run = window.CORUN.getCache('run_edit_' + $routeParams.id);
+   console.log("Error:" + data);
+  });
+
 
   // Set the form data
   var d = new Date();

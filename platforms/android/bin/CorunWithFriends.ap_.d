@@ -112,6 +112,7 @@
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/settings.html \
+/Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/signup.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/partials/run/edit.html \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.camera \
 /Applications/MAMP/htdocs/corunme/platforms/android/assets/www/plugins/org.apache.cordova.contacts \

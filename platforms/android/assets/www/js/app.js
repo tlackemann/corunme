@@ -14,6 +14,7 @@ config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvide
     	when('/run/edit/:id', {templateUrl: 'partials/run/edit.html', controller: RunEditCtrl}).
     	when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsCtrl}).
     	when('/profile', {templateUrl: 'partials/profile.html', controller: ProfileCtrl}).
+		when('/signup', {templateUrl: 'partials/signup.html', controller: UserLoginCtrl}).
 		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserLoginCtrl});
 }]);
 

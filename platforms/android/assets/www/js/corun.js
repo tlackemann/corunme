@@ -18,14 +18,14 @@
  		var CACHE_KEY_RUN = 'run';
 
  		/**
- 		 * How many milliseconds to wait in between GPS polls (default: 10 seconds)
+ 		 * How many milliseconds to wait in between GPS polls (default: 5 seconds)
  		 */
- 		this.runTimeout = 10000,
+ 		this.runTimeout = 5000,
 
  		/**
- 		 * How many milliseconds to wait in between GPS poll session saves (default: 10 seconds)
+ 		 * How many milliseconds to wait in between GPS poll session saves (default: 5 seconds)
  		 */
- 		this.runCacheTimeout = 10000,
+ 		this.runCacheTimeout = 5000,
 
  		/**
  		 * API URL
@@ -176,10 +176,15 @@
 
  		/**
  		 * Gets a users session data
+ 		 * @param string field
  		 * @return object
  		 */
- 		this.getUser = function() {
+ 		this.getUser = function(field) {
  			if (this.checkUser) {
+ 				if (field) {
+ 					var cache = JSON.parse(this.getCache(CACHE_KEY_USER));
+ 					return (cache[field] != undefined) ? cache[field] : '';
+ 				}	
  				return JSON.parse(this.getCache(CACHE_KEY_USER));
  			}
  		},
@@ -187,10 +192,18 @@
  		/**
  		 * Sets a users session data
  		 * @param string s; The current session code
+ 		 * @param string field; The field to update specifically
  		 * @return void
  		 */
- 		this.setUser = function(s) {
- 			this.setCache(CACHE_KEY_USER, JSON.stringify({ session: s }));
+ 		this.setUser = function(s, field) {
+ 			if (field)
+ 			{
+
+ 			}
+ 			else
+ 			{
+ 				this.setCache(CACHE_KEY_USER, JSON.stringify( s ));
+ 			}
 			return; 			
  		}
 
@@ -298,7 +311,7 @@
  		},
 
  		/**
- 		 * Start, cache, and render mapbox
+ 		 * Start the mapbox
  		 * @return CORUN
  		 */
  		this.initMap = function() {
@@ -306,19 +319,51 @@
 			this.map = L.mapbox.map(this.mapElement, this.mapboxId, {
 				zoomControl: false 
 			});
-			
-
-		    if (!navigator.geolocation) {
-		        // Ask to change system prefs
-
-		        //alert('geolocation is not available. please update your settings by going here');
-		    } else {
-            	this.map.locate();
-		    }
-
-			this.initGeoListener();
 
 		    return this;
+ 		},
+
+		/**
+ 		 * Locate the user on the mapbox
+ 		 * @return CORUN
+ 		 */
+ 		this.mapLocate = function() {
+ 			if (this.map) {
+			    if (!navigator.geolocation) {
+			        // Ask to change system prefs
+			        //alert('geolocation is not available. please update your settings by going here');
+			    } else {
+	            	this.map.locate();
+			    }
+
+				this.initGeoListener();
+			}
+			return this;
+ 		},
+
+ 		/**
+ 		 * Draw the route on mapbox
+ 		 * @param array mapdata
+ 		 * @return CORUN
+ 		 */
+ 		this.mapDrawRoute = function(mapdata) {
+ 			console.log(mapdata);
+ 			if (this.map) {
+
+				var LatLng = [];
+
+ 				for (var i in mapdata) {
+ 					var data = mapdata[i];
+ 					var coords = data['coords'];
+
+ 					LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
+ 				}
+
+				var polyline = L.polyline(LatLng, {color: 'red'}).addTo(this.map);
+
+				this.map.fitBounds(polyline.getBounds());
+			}
+			return this;
  		},
 
  		/**
@@ -433,16 +478,18 @@
  			
  			// Start the geo listener
  			this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
- 				console.log(position);
+ 				if (position) {
+	 				console.log(position);
 
- 				self._runGpsData.push(position);
+	 				self._runGpsData.push(position);
 
- 				// Store the current in localstorage, save every minute
- 				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
+	 				// Store the current in localstorage, save every minute
+	 				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
 
- 					self.setMapData(self._runGpsData);
- 					console.log('Saved run session cache');
- 					console.log(self.getMapData());
+	 					self.setMapData(self._runGpsData);
+	 					console.log('Saved run session cache');
+	 					console.log(self.getMapData());
+	 				}
  				}
  			},
  			function(error) {
