@@ -20,12 +20,12 @@
  		/**
  		 * How many milliseconds to wait in between GPS polls (default: 5 seconds)
  		 */
- 		this.runTimeout = 5000,
+ 		this.runTimeout = 2000,
 
  		/**
  		 * How many milliseconds to wait in between GPS poll session saves (default: 5 seconds)
  		 */
- 		this.runCacheTimeout = 5000,
+ 		this.runCacheTimeout = 6000,
 
  		/**
  		 * API URL
@@ -243,9 +243,7 @@
  				if (hashChange) {
 	 				switch(self._hash) {
 	 					case '#/' :
-	 						if (self._pgWatchId) {
-	 							navigator.geolocation.clearWatch(self._pgWatchId);
-	 						}
+	 						
 	 						break;
 	 					case '#/run' :
 
@@ -262,15 +260,15 @@
  		 * @return CORUN
  		 */
  		this.initClickListener = function() {
- 			console.log('Click listener started');
+ 			// console.log('Click listener started');
 
- 			var marker = this.getElementByClassname('leaflet-marker-icon');
+ 			// var marker = this.getElementByClassname('leaflet-marker-icon');
  			
- 			return this;
+ 			// return this;
  		},
 
  		/**
- 		 * Star the map listeners
+ 		 * Start the map listeners
  		 * @return CORUN
  		 */
  		this.initGeoListener = function() {
@@ -453,6 +451,13 @@
  				self._runTime += 1;
  				document.getElementById('distance').innerHTML = self._runDistance + 'mi';
  				document.getElementById('time').innerHTML = self._runTime + 'sec';
+ 				// Store the current in localstorage, save every minute
+ 				if (self._runTime % (self.runCacheTimeout / 1000) == 0) {
+
+ 					self.setMapData(self._runGpsData);
+ 					console.log('Saved run session cache');
+ 					console.log(self.getMapData());
+ 				}
  			}, 1000);
  			return this;
  		},
@@ -477,28 +482,29 @@
  			this._runGpsData = [];
  			
  			// Start the geo listener
- 			this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
+ 			this._pgWatchId = setInterval(function() {
+ 				self._watchPosition()
+ 			}, this.runTimeout);
+
+ 		},
+
+ 		/**
+ 		 * Stores the position of the device based on a given interval
+ 		 * @return CORUN
+ 		 */
+ 		this._watchPosition = function() {
+ 			navigator.geolocation.getCurrentPosition(function(position) {
  				if (position) {
 	 				console.log(position);
+	 				// @TODO Check for accuracy, duplicate positions (within a certain threshold)
 
+	 				// Store the position
 	 				self._runGpsData.push(position);
-
-	 				// Store the current in localstorage, save every minute
-	 				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
-
-	 					self.setMapData(self._runGpsData);
-	 					console.log('Saved run session cache');
-	 					console.log(self.getMapData());
-	 				}
  				}
- 			},
- 			function(error) {
- 				// On error
- 				console.log('code: '    + error.code    + '\n' +
-          		'message: ' + error.message + '\n');
+ 			});
 
- 			}, { timeout: this.runTimeout });
- 		},
+ 			return this;
+ 		}
 
  		/**
  		 * Stops a run
@@ -509,7 +515,7 @@
  			
  			this.stopRunToolbar();
 
- 			navigator.geolocation.clearWatch(this._pgWatchId);
+ 			clearInterval(this._pgWatchId);
 
  			this.setMapData(this._runGpsData);
 
@@ -573,6 +579,11 @@
 			return this;
 		},
 
+		/**
+		 * Returns an element based on it's classname
+		 * @param string classname
+		 * @return Element
+		 */
 		this.getElementByClassname = function(classname) {
 		    var elems = document.getElementsByTagName('*'), i;
 		    var returnElems = [];
@@ -588,6 +599,7 @@
 		return this;
  	};
 
+ 	// Run it! (Puns!)
  	if (!window.CORUN) {
  		window.CORUN = new CORUN();
  	} else {

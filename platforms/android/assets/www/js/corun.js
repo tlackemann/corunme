@@ -20,12 +20,12 @@
  		/**
  		 * How many milliseconds to wait in between GPS polls (default: 5 seconds)
  		 */
- 		this.runTimeout = 5000,
+ 		this.runTimeout = 1000,
 
  		/**
  		 * How many milliseconds to wait in between GPS poll session saves (default: 5 seconds)
  		 */
- 		this.runCacheTimeout = 5000,
+ 		this.runCacheTimeout = 1000,
 
  		/**
  		 * API URL
@@ -477,7 +477,35 @@
  			this._runGpsData = [];
  			
  			// Start the geo listener
- 			this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
+ 			this._pgWatchId = setInterval(function() {
+ 				self._watchPosition()
+ 			}, this.runTimeout);
+
+ 			// this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
+ 			// 	if (position) {
+	 		// 		console.log(position);
+
+	 		// 		self._runGpsData.push(position);
+
+	 		// 		// Store the current in localstorage, save every minute
+	 		// 		if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
+
+	 		// 			self.setMapData(self._runGpsData);
+	 		// 			console.log('Saved run session cache');
+	 		// 			console.log(self.getMapData());
+	 		// 		}
+ 			// 	}
+ 			// },
+ 			// function(error) {
+ 			// 	// On error
+ 			// 	console.log('code: '    + error.code    + '\n' +
+    //       		'message: ' + error.message + '\n');
+
+ 			// }, { timeout: this.runTimeout });
+ 		},
+
+ 		this._watchPosition = function() {
+ 			navigator.geolocation.getCurrentPosition(function(position) {
  				if (position) {
 	 				console.log(position);
 
@@ -491,14 +519,8 @@
 	 					console.log(self.getMapData());
 	 				}
  				}
- 			},
- 			function(error) {
- 				// On error
- 				console.log('code: '    + error.code    + '\n' +
-          		'message: ' + error.message + '\n');
-
- 			}, { timeout: this.runTimeout });
- 		},
+ 			});
+ 		}
 
  		/**
  		 * Stops a run
@@ -509,7 +531,8 @@
  			
  			this.stopRunToolbar();
 
- 			navigator.geolocation.clearWatch(this._pgWatchId);
+ 			clearInterval(this._pgWatchId);
+ 			//navigator.geolocation.clearWatch(this._pgWatchId);
 
  			this.setMapData(this._runGpsData);
 
