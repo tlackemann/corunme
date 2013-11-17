@@ -1,5 +1,8 @@
 <div ng-include src="'partials/_header.html'"></div>
 Dashboard
 
-<a ng-href="#/run/edit/38">Edit Run #38</a><br/>
-<a ng-href="#/run/edit/39">Edit Run #39</a><br/>
+<ul>
+	<li ng-repeat="item in corun.runs">	
+		<a ng-href="#/run/edit/{{ item.id }}">Edit Run #{{ item.id }} </a>
+	</li>
+</ul>

@@ -59,7 +59,6 @@
     <access origin="*" />
     <preference name="useBrowserHistory" value="true" />
     <preference name="exit-on-suspend" value="false" />
-    <preference name="permissions" value="none" />
     <preference name="DisallowOverscroll" value="false" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />

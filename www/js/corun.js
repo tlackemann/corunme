@@ -18,14 +18,14 @@
  		var CACHE_KEY_RUN = 'run';
 
  		/**
- 		 * How many milliseconds to wait in between GPS polls (default: 5 seconds)
+ 		 * How many milliseconds to wait in between GPS polls (default: 2 seconds)
  		 */
- 		this.runTimeout = 2000,
+ 		this.runTimeout = 5000,
 
  		/**
- 		 * How many milliseconds to wait in between GPS poll session saves (default: 5 seconds)
+ 		 * How many milliseconds to wait in between GPS poll session saves (default: 6 seconds)
  		 */
- 		this.runCacheTimeout = 6000,
+ 		this.runCacheTimeout = 10000,
 
  		/**
  		 * API URL
@@ -33,14 +33,19 @@
  		this.apiUrl = 'http://192.168.1.11/corunme-api/public/',
 
  		/**
- 		 * Map element ID
- 		 */
- 		this.mapElement = 'map',
-
- 		/**
  		 * Mapbox map id
  		 */
  		this.mapboxId = 'tlackemann.map-zd9ny0b7',
+
+ 		/**
+ 		 * Mapbox Static API URL
+ 		 */
+ 		this.mapboxApiUrl = 'http://api.tiles.mapbox.com/v3/' + this.mapboxId + '/',
+
+ 		/**
+ 		 * Map element ID
+ 		 */
+ 		this.mapElement = 'map',
 
 		/**
  		 * Submenu element id
@@ -160,6 +165,15 @@
  		},
 
  		/**
+ 		 * Get Mapbox full Static API URL
+ 		 * @param string url
+ 		 * @return string
+ 		 */
+ 		this.getMapboxUrl = function(url) {
+ 			return this.mapboxApiUrl + url;
+ 		}
+
+ 		/**
  		 * Checks if a user session is present - used to validated the next server call
  		 * @return boolean
  		 */
@@ -198,14 +212,44 @@
  		this.setUser = function(s, field) {
  			if (field)
  			{
+ 				var user = this.getUser();
+ 				for (var i in user) {
+ 					if (i == field) {
+ 						user[i] = s;
+ 					}
+ 				}
 
+ 				this.setUser(user);
  			}
  			else
  			{
  				this.setCache(CACHE_KEY_USER, JSON.stringify( s ));
  			}
 			return; 			
- 		}
+ 		},
+
+ 		/**
+ 		 * Handles the data returned by a server call and returns the necessary pieces
+ 		 * @param object data
+ 		 * @return object
+ 		 */
+ 		this.handleData = function(data) {
+ 			if (data.corun !== undefined && data.corun.data !== undefined) {
+ 				
+ 				// Set the user session
+ 				if (data.corun.data.user !== undefined && data.corun.data.user.session) {
+ 					this.setUser(data.corun.data.user.session, 'session');
+ 				}
+
+ 				var corun = {};
+ 				for (var i in data.corun.data) {
+ 					corun[i] = data.corun.data[i];
+ 				}
+
+ 				return corun;
+ 			}
+ 			return data;
+ 		},
 
  		/**
  		 * Gets a users current map data
@@ -224,6 +268,14 @@
  		this.setMapData = function(s) {
  			this.setCache(CACHE_KEY_RUN, JSON.stringify(s));
 			return; 			
+ 		},
+
+ 		/**
+ 		 * Returns the map time
+ 		 * @return int
+ 		 */
+ 		this.getMapTime = function() {
+ 			return this._runTime;
  		}
 
  		/**
@@ -310,13 +362,18 @@
 
  		/**
  		 * Start the mapbox
+ 		 * @param object options
  		 * @return CORUN
  		 */
- 		this.initMap = function() {
+ 		this.initMap = function(options) {
+ 			// Set the options
+ 			if (!options) {
+ 				options = {
+ 					zoomControl: false
+ 				};
+ 			}
  			// Start the map
-			this.map = L.mapbox.map(this.mapElement, this.mapboxId, {
-				zoomControl: false 
-			});
+			this.map = L.mapbox.map(this.mapElement, this.mapboxId, options);
 
 		    return this;
  		},
@@ -350,11 +407,25 @@
 
 				var LatLng = [];
 
+				var _lastLat = 0.00;
+				var _lastLon = 0.00;
  				for (var i in mapdata) {
  					var data = mapdata[i];
  					var coords = data['coords'];
+ 					if (coords.accuracy >= 70 && coords.accuracy < 1000)
+ 					{
+	 					// Some tom foolery going on here
+	 					//var lonAccuracyCheck = Math.abs(Math.abs(_lastLon) - Math.abs(coords.longitude)) < 0.0002;
+	 					//var latAccuracyCheck = Math.abs(Math.abs(_lastLat) - Math.abs(coords.latitude)) < 0.0002;
+						//if (lonAccuracyCheck && latAccuracyCheck)
+						//{
+ 							console.log(coords);
+							LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
+						//}
 
- 					LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
+	 					_lastLon = coords.longitude;
+	 					_lastLat = coords.latitude;
+ 					}
  				}
 
 				var polyline = L.polyline(LatLng, {color: 'red'}).addTo(this.map);
@@ -518,6 +589,8 @@
  			clearInterval(this._pgWatchId);
 
  			this.setMapData(this._runGpsData);
+
+ 			this._runTime = 0;
 
  			return this;
  		},

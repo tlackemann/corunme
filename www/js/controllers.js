@@ -17,12 +17,16 @@ function RunCtrl($scope, $http, $location, MapService) {
 
     var post = {
       session: window.CORUN.getUser('session'),
-      map_data: window.CORUN.getMapData()
+      map_data: window.CORUN.getMapData(),
+      start_time: Math.round(new Date().getTime() / 1000) - window.CORUN.getMapTime(),
+      end_time: Math.round(new Date().getTime() / 1000)
     }
     $http.post(window.CORUN.getUrl('run'), post)
       .success(function(data, status, headers, config) {
+        
         // Save the new session
-        window.CORUN.setUser(data.corun.data);
+        window.CORUN.handleData(data);
+
         $location.path('/run/edit/' + data.corun.data.run_id);
       })
       .error(function(data, status, headers, config) {
@@ -37,18 +41,51 @@ function SettingsCtrl($scope, $http, $location, UserService, MapService) {
     $location.path('/login');
   }
   $scope.corunSubmenu = $location.path();
-  $scope.mapData = window.CORUN.getMapData;
+  $scope.mapData = window.CORUN.getMapData();
   $scope.userData = window.CORUN.getUser();
   console.log($location.path());
 }
 
-function IndexCtrl($scope, $http, $location, UserService) {
+function IndexCtrl($scope, $http, $location) {
   if (!window.CORUN.checkUser())
   {
     $location.path('/login');
   }
 
-  console.log(window.CORUN.getUser());
+  var corun = JSON.parse(window.CORUN.getCache('run_feed', true));
+    // Add the images
+  for (var item in corun.runs) {
+    console.log(corun.runs[item]);
+    corun.runs[item].image = window.CORUN.getMapboxUrl(corun.runs[item].start_lon.toFixed(2) + ',' + corun.runs[item].start_lat.toFixed(2) + ',15' + '/300x250.png');
+  }
+
+  if (corun === undefined) {
+    $http({
+        method: 'GET',
+        url: window.CORUN.getUrl('run?session=' + window.CORUN.getUser('session')),
+    }).success(function(data, status, headers, config) {
+      
+      // Handle the data & set the scopes
+      $scope.corun = window.CORUN.handleData(data);
+
+      console.log("Corun Data");
+      console.log($scope.corun);
+
+      // Save the feed cache
+      window.CORUN.setCache('run_feed', JSON.stringify($scope.corun));
+      
+      // Start the map
+      //window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
+
+    })
+    .error(function(data, status, headers, config) {
+      $location.path('/login');
+    });
+  } else {
+    $scope.corun = corun;
+  }
+
+
 
   $scope.corunSubmenu = $location.path();
   console.log($location.path());
@@ -113,14 +150,11 @@ function RunEditCtrl($scope, $http, $location, $routeParams) {
     window.CORUN.setCache('run_edit_' + $scope.run.id, $scope.run);
     // Start the map
     window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
-
-    console.log(data);
   })
   .error(function(data, status, headers, config) {
     $scope.run = window.CORUN.getCache('run_edit_' + $routeParams.id);
    console.log("Error:" + data);
   });
-
 
   // Set the form data
   var d = new Date();

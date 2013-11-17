@@ -18,14 +18,14 @@
  		var CACHE_KEY_RUN = 'run';
 
  		/**
- 		 * How many milliseconds to wait in between GPS polls (default: 5 seconds)
+ 		 * How many milliseconds to wait in between GPS polls (default: 2 seconds)
  		 */
- 		this.runTimeout = 1000,
+ 		this.runTimeout = 5000,
 
  		/**
- 		 * How many milliseconds to wait in between GPS poll session saves (default: 5 seconds)
+ 		 * How many milliseconds to wait in between GPS poll session saves (default: 6 seconds)
  		 */
- 		this.runCacheTimeout = 1000,
+ 		this.runCacheTimeout = 10000,
 
  		/**
  		 * API URL
@@ -198,14 +198,44 @@
  		this.setUser = function(s, field) {
  			if (field)
  			{
+ 				var user = this.getUser();
+ 				for (var i in user) {
+ 					if (i == field) {
+ 						user[i] = s;
+ 					}
+ 				}
 
+ 				this.setUser(user);
  			}
  			else
  			{
  				this.setCache(CACHE_KEY_USER, JSON.stringify( s ));
  			}
 			return; 			
- 		}
+ 		},
+
+ 		/**
+ 		 * Handles the data returned by a server call and returns the necessary pieces
+ 		 * @param object data
+ 		 * @return object
+ 		 */
+ 		this.handleData = function(data) {
+ 			if (data.corun !== undefined && data.corun.data !== undefined) {
+ 				
+ 				// Set the user session
+ 				if (data.corun.data.user !== undefined && data.corun.data.user.session) {
+ 					this.setUser(data.corun.data.user.session, 'session');
+ 				}
+
+ 				var corun = {};
+ 				for (var i in data.corun.data) {
+ 					corun[i] = data.corun.data[i];
+ 				}
+
+ 				return corun;
+ 			}
+ 			return data;
+ 		},
 
  		/**
  		 * Gets a users current map data
@@ -224,6 +254,14 @@
  		this.setMapData = function(s) {
  			this.setCache(CACHE_KEY_RUN, JSON.stringify(s));
 			return; 			
+ 		},
+
+ 		/**
+ 		 * Returns the map time
+ 		 * @return int
+ 		 */
+ 		this.getMapTime = function() {
+ 			return this._runTime;
  		}
 
  		/**
@@ -243,9 +281,7 @@
  				if (hashChange) {
 	 				switch(self._hash) {
 	 					case '#/' :
-	 						if (self._pgWatchId) {
-	 							navigator.geolocation.clearWatch(self._pgWatchId);
-	 						}
+	 						
 	 						break;
 	 					case '#/run' :
 
@@ -262,15 +298,15 @@
  		 * @return CORUN
  		 */
  		this.initClickListener = function() {
- 			console.log('Click listener started');
+ 			// console.log('Click listener started');
 
- 			var marker = this.getElementByClassname('leaflet-marker-icon');
+ 			// var marker = this.getElementByClassname('leaflet-marker-icon');
  			
- 			return this;
+ 			// return this;
  		},
 
  		/**
- 		 * Star the map listeners
+ 		 * Start the map listeners
  		 * @return CORUN
  		 */
  		this.initGeoListener = function() {
@@ -312,13 +348,18 @@
 
  		/**
  		 * Start the mapbox
+ 		 * @param object options
  		 * @return CORUN
  		 */
- 		this.initMap = function() {
+ 		this.initMap = function(options) {
+ 			// Set the options
+ 			if (!options) {
+ 				options = {
+ 					zoomControl: false
+ 				};
+ 			}
  			// Start the map
-			this.map = L.mapbox.map(this.mapElement, this.mapboxId, {
-				zoomControl: false 
-			});
+			this.map = L.mapbox.map(this.mapElement, this.mapboxId, options);
 
 		    return this;
  		},
@@ -352,11 +393,25 @@
 
 				var LatLng = [];
 
+				var _lastLat = 0.00;
+				var _lastLon = 0.00;
  				for (var i in mapdata) {
  					var data = mapdata[i];
  					var coords = data['coords'];
+ 					if (coords.accuracy >= 70 && coords.accuracy < 1000)
+ 					{
+	 					// Some tom foolery going on here
+	 					//var lonAccuracyCheck = Math.abs(Math.abs(_lastLon) - Math.abs(coords.longitude)) < 0.0002;
+	 					//var latAccuracyCheck = Math.abs(Math.abs(_lastLat) - Math.abs(coords.latitude)) < 0.0002;
+						//if (lonAccuracyCheck && latAccuracyCheck)
+						//{
+ 							console.log(coords);
+							LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
+						//}
 
- 					LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
+	 					_lastLon = coords.longitude;
+	 					_lastLat = coords.latitude;
+ 					}
  				}
 
 				var polyline = L.polyline(LatLng, {color: 'red'}).addTo(this.map);
@@ -453,6 +508,13 @@
  				self._runTime += 1;
  				document.getElementById('distance').innerHTML = self._runDistance + 'mi';
  				document.getElementById('time').innerHTML = self._runTime + 'sec';
+ 				// Store the current in localstorage, save every minute
+ 				if (self._runTime % (self.runCacheTimeout / 1000) == 0) {
+
+ 					self.setMapData(self._runGpsData);
+ 					console.log('Saved run session cache');
+ 					console.log(self.getMapData());
+ 				}
  			}, 1000);
  			return this;
  		},
@@ -481,45 +543,24 @@
  				self._watchPosition()
  			}, this.runTimeout);
 
- 			// this._pgWatchId = navigator.geolocation.watchPosition(function(position) {
- 			// 	if (position) {
-	 		// 		console.log(position);
-
-	 		// 		self._runGpsData.push(position);
-
-	 		// 		// Store the current in localstorage, save every minute
-	 		// 		if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
-
-	 		// 			self.setMapData(self._runGpsData);
-	 		// 			console.log('Saved run session cache');
-	 		// 			console.log(self.getMapData());
-	 		// 		}
- 			// 	}
- 			// },
- 			// function(error) {
- 			// 	// On error
- 			// 	console.log('code: '    + error.code    + '\n' +
-    //       		'message: ' + error.message + '\n');
-
- 			// }, { timeout: this.runTimeout });
  		},
 
+ 		/**
+ 		 * Stores the position of the device based on a given interval
+ 		 * @return CORUN
+ 		 */
  		this._watchPosition = function() {
  			navigator.geolocation.getCurrentPosition(function(position) {
  				if (position) {
 	 				console.log(position);
+	 				// @TODO Check for accuracy, duplicate positions (within a certain threshold)
 
+	 				// Store the position
 	 				self._runGpsData.push(position);
-
-	 				// Store the current in localstorage, save every minute
-	 				if ((self._runTime + 1) % (self.runCacheTimeout / 1000) == 0) {
-
-	 					self.setMapData(self._runGpsData);
-	 					console.log('Saved run session cache');
-	 					console.log(self.getMapData());
-	 				}
  				}
  			});
+
+ 			return this;
  		}
 
  		/**
@@ -532,9 +573,10 @@
  			this.stopRunToolbar();
 
  			clearInterval(this._pgWatchId);
- 			//navigator.geolocation.clearWatch(this._pgWatchId);
 
  			this.setMapData(this._runGpsData);
+
+ 			this._runTime = 0;
 
  			return this;
  		},
@@ -596,6 +638,11 @@
 			return this;
 		},
 
+		/**
+		 * Returns an element based on it's classname
+		 * @param string classname
+		 * @return Element
+		 */
 		this.getElementByClassname = function(classname) {
 		    var elems = document.getElementsByTagName('*'), i;
 		    var returnElems = [];
@@ -611,6 +658,7 @@
 		return this;
  	};
 
+ 	// Run it! (Puns!)
  	if (!window.CORUN) {
  		window.CORUN = new CORUN();
  	} else {
