@@ -9,13 +9,13 @@ config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvide
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
   	
   	$routeProvider.
-    	when('/', {templateUrl: 'partials/dashboard.html', controller: IndexCtrl}).
+    	when('/', {templateUrl: 'partials/dashboard.html', controller: SettingsCtrl}).
     	when('/run', {templateUrl: 'partials/run.html', controller: RunCtrl}).
     	when('/run/edit/:id', {templateUrl: 'partials/run/edit.html', controller: RunEditCtrl}).
     	when('/settings', {templateUrl: 'partials/settings.html', controller: SettingsCtrl}).
     	when('/profile', {templateUrl: 'partials/profile.html', controller: ProfileCtrl}).
 		when('/signup', {templateUrl: 'partials/signup.html', controller: UserLoginCtrl}).
-		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserLoginCtrl});
+		otherwise({redirectTo: '/login', templateUrl: 'partials/login.html', controller: UserController});
 }]);
 
 corunApp.factory('UserService', [function() {

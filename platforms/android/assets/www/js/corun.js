@@ -2,8 +2,17 @@
  * Corun Object
  * Contains the essential pieces of the corun application in phonegap
  */
+
  (function() {
  	'use strict';
+
+ 	Object.size = function(obj) {
+	    var size = 0, key;
+	    for (key in obj) {
+	        if (obj.hasOwnProperty(key)) size++;
+	    }
+	    return size;
+	};
 
  	var CORUN = function() {
  		/**
@@ -14,18 +23,32 @@
  		/**
  		 * Constants
  		 */
- 		var CACHE_KEY_USER = 'user';
- 		var CACHE_KEY_RUN = 'run';
+ 		var CACHE_KEY_USER	= 'user';
+ 		var CACHE_KEY_RUN	= 'run';
+ 		var CACHE_KEY_FEED	= 'feed';
+
+ 		/**
+ 		 * Debugging
+ 		 * When enabled, events will be logged to the developer or javascript console
+ 		 */
+ 		this.debugging = true,
+
+ 		/**
+ 		 * Debugging level
+ 		 * The level at which functions should be logged. Technically every function is logged
+ 		 * however the stack trace will only log up to the level set (default: 5)
+ 		 */
+ 		this.debugLevel = 5,
 
  		/**
  		 * How many milliseconds to wait in between GPS polls (default: 2 seconds)
  		 */
- 		this.runTimeout = 5000,
+ 		this.runTimeout = 10000,
 
  		/**
  		 * How many milliseconds to wait in between GPS poll session saves (default: 6 seconds)
  		 */
- 		this.runCacheTimeout = 10000,
+ 		this.runCacheTimeout = 30000,
 
  		/**
  		 * API URL
@@ -33,14 +56,24 @@
  		this.apiUrl = 'http://192.168.1.11/corunme-api/public/',
 
  		/**
- 		 * Map element ID
+ 		 * Map Type
  		 */
- 		this.mapElement = 'map',
+ 		this.mapType = 'mapbox',
 
  		/**
  		 * Mapbox map id
  		 */
  		this.mapboxId = 'tlackemann.map-zd9ny0b7',
+
+ 		/**
+ 		 * Mapbox Static API URL
+ 		 */
+ 		this.mapboxApiUrl = 'http://api.tiles.mapbox.com/v3/' + this.mapboxId + '/',
+
+ 		/**
+ 		 * Map element ID
+ 		 */
+ 		this.mapElement = 'map',
 
 		/**
  		 * Submenu element id
@@ -133,10 +166,37 @@
  		this._corunSession = false,
 
  		/**
+ 		 * Protected: Singleton error instance
+ 		 */
+ 		this._err = false,
+
+ 		/**
+ 		 * Protected: User cache
+ 		 */
+ 		this._userCache = false,
+
+ 		/**
+ 		 * Protected: Interval for map listener
+ 		 */
+ 		this._intervalMapListener = false,
+
+ 		/**
+ 		 * Protected: Instance of all corun maps on a page
+ 		 */
+ 		this._maps = [],
+
+ 		/**
+ 		 * Protected: Feed instance
+ 		 */
+ 		this._feed = false,
+
+ 		/**
  		 * Start the application
  		 * @return CORUN
  		 */
  		this.init = function(session) {
+ 			// Debug the event
+ 			this.debug('Corun application started');
 
  			// Start the cache instance
  			this.cache = window.localStorage;
@@ -146,6 +206,7 @@
 
  			// Start the listeners
  			this.initUrlListener();
+ 			this.initClickListener();
 
  			return this;
  		},
@@ -160,13 +221,24 @@
  		},
 
  		/**
+ 		 * Get Mapbox full Static API URL
+ 		 * @param string url
+ 		 * @return string
+ 		 */
+ 		this.getMapboxUrl = function(url) {
+ 			return this.mapboxApiUrl + url;
+ 		}
+
+ 		/**
  		 * Checks if a user session is present - used to validated the next server call
  		 * @return boolean
  		 */
  		this.checkUser = function() {
- 			var session = this.getCache(CACHE_KEY_USER);
+ 			if (!this._userCache) {
+ 				this.getUser();
+ 			}
 
- 			if (session !== '') {
+ 			if (this.getUser('session') !== false) {
  				return true;
  			}
  			else {
@@ -180,13 +252,19 @@
  		 * @return object
  		 */
  		this.getUser = function(field) {
- 			if (this.checkUser) {
- 				if (field) {
- 					var cache = JSON.parse(this.getCache(CACHE_KEY_USER));
- 					return (cache[field] != undefined) ? cache[field] : '';
- 				}	
- 				return JSON.parse(this.getCache(CACHE_KEY_USER));
- 			}
+			if (!this._userCache) {
+				this._userCache = JSON.parse(this.getCache(CACHE_KEY_USER, true));
+			}
+
+			if (field && this._userCache[field] != undefined) {
+				return this._userCache[field];
+			} else if (field) {
+				this.debug(field + ' not found', 'high');
+				return false;
+			}
+
+			return this._userCache;
+ 			
  		},
 
  		/**
@@ -196,22 +274,50 @@
  		 * @return void
  		 */
  		this.setUser = function(s, field) {
- 			if (field)
- 			{
- 				var user = this.getUser();
+ 			var user = false;
+ 			if (field) {
+	 			// Debug the event
+	 			this.debug('Saved user field "' + field + '" (' + s + ')');
+ 				user = this.getUser();
  				for (var i in user) {
  					if (i == field) {
  						user[i] = s;
  					}
  				}
-
  				this.setUser(user);
- 			}
- 			else
- 			{
+ 			} else {
+	 			// Debug the event
+	 			this.debug('Saved user to cache');
  				this.setCache(CACHE_KEY_USER, JSON.stringify( s ));
  			}
+ 			// Save the internal cache because of a bug on redirect that doesn't pick up the cache yet
+ 			this._userCache = (user) ? user : s;
 			return; 			
+ 		},
+
+ 		/**
+ 		 * Gets the feed
+ 		 * @return object
+ 		 */
+ 		this.getFeed = function() {
+ 			if (!this._feed) {
+				this._feed = JSON.parse(this.getCache(CACHE_KEY_FEED, true));
+			}
+
+			return this._feed;
+ 		},
+
+ 		/**
+ 		 * Sets the feed
+ 		 * @return void
+ 		 */
+ 		this.setFeed = function(data) {
+ 			// Debug the event
+ 			this.debug('Saved feed to cache');
+			this.setCache(CACHE_KEY_FEED, JSON.stringify( data ));
+ 			// Save to internal var cache because of redirect bug
+ 			this._feed = data;
+			return; 
  		},
 
  		/**
@@ -222,7 +328,7 @@
  		this.handleData = function(data) {
  			if (data.corun !== undefined && data.corun.data !== undefined) {
  				
- 				// Set the user session
+ 				// Set the new user session
  				if (data.corun.data.user !== undefined && data.corun.data.user.session) {
  					this.setUser(data.corun.data.user.session, 'session');
  				}
@@ -243,7 +349,7 @@
  		 * @return object
  		 */
  		this.getMapData = function(json) {
- 			return (json) ? this.getCache(CACHE_KEY_RUN) : JSON.parse(this.getCache(CACHE_KEY_RUN));
+ 			return (json) ? this.getCache(CACHE_KEY_RUN) : JSON.parse(this.getCache(CACHE_KEY_RUN, true));
  		},
 
  		/**
@@ -269,6 +375,9 @@
  		 * @return CORUN
  		 */
  		this.initUrlListener = function() {
+ 			// Debug the event
+ 			this.debug('URL listener started');
+
  			var hashChange = false;
  			setInterval(function() {
  				if (self._hash !== window.location.hash) {
@@ -298,11 +407,29 @@
  		 * @return CORUN
  		 */
  		this.initClickListener = function() {
- 			// console.log('Click listener started');
-
+ 			this.debug('Click listener started');
  			// var marker = this.getElementByClassname('leaflet-marker-icon');
- 			
  			// return this;
+ 		},
+
+ 		this.initMapListener = function() {
+ 			this.debug('Map listener started');
+ 			this._intervalMapListener = setInterval(function() {
+ 				self._maps = self.getElementByClassname('map');
+ 				if (self._maps.length > 0) {
+ 					var mapData = self.getFeed();
+ 					var i = 0;
+					// We can assume getFeed is returning the same map order so draw based on the same index
+ 					for (var map in mapData.runs) {
+ 						if (JSON.parse(mapData.runs[map].map_data).length > 0) {
+ 							self.initMap(null, self._maps[i].id).mapDrawRoute(JSON.parse(mapData.runs[map].map_data));
+ 						}
+ 						++i;
+	 				}
+	 				// Stop the listener
+	 				clearInterval(self._intervalMapListener);
+ 				}
+ 			}, 500); // every 2 seconds
  		},
 
  		/**
@@ -310,65 +437,126 @@
  		 * @return CORUN
  		 */
  		this.initGeoListener = function() {
-		    this.map.on('locationfound', function(e) {
-		        self.map.fitBounds(e.bounds);
+ 			if (this.mapType == 'mapbox') {
+			    this.map.on('locationfound', function(e) {
+			        self.map.fitBounds(e.bounds);
 
-	        	self.map.markerLayer.setGeoJSON({
-		            type: "Feature",
-		            geometry: {
-		                type: "Point",
-		                coordinates: [e.latlng.lng, e.latlng.lat],
-		            },
-		            properties: {
-		                'marker-color': '#000',
-		                'marker-symbol': 'star-stroked'
-		            }
-		        });
+		        	self.map.markerLayer.setGeoJSON({
+			            type: "Feature",
+			            geometry: {
+			                type: "Point",
+			                coordinates: [e.latlng.lng, e.latlng.lat],
+			            },
+			            properties: {
+			                'marker-color': '#000',
+			                'marker-symbol': 'star-stroked'
+			            }
+			        });
 
-		        var marker = self.getElementByClassname('leaflet-marker-icon')[0];
+			        var marker = self.getElementByClassname('leaflet-marker-icon')[0];
 
- 				marker.addEventListener('touchstart', function(e) {
-	 				self.startCountdown();
+	 				marker.addEventListener('touchstart', function(e) {
+		 				self.startCountdown();
+				    });
+
+				    marker.addEventListener('touchend', function(e) {
+		 				self.stopCountdown();
+				    });
+
+				        self.map.setZoom(15);
+				    });
+
+			    this.map.on('locationerror', function() {
+			        alert('position could not be found');
 			    });
-
-			    marker.addEventListener('touchend', function(e) {
-	 				self.stopCountdown();
-			    });
-
-			        self.map.setZoom(15);
-			    });
-
-		    this.map.on('locationerror', function() {
-		        alert('position could not be found');
-		    });
-
+			}
 		    
  			return this;
  		},
 
  		/**
- 		 * Start the mapbox
+ 		 * Start the map
  		 * @param object options
+ 		 * @param string elementId
  		 * @return CORUN
  		 */
- 		this.initMap = function(options) {
+ 		this.initMap = function(options, elementId) {
+ 			// Debug
+			this.debug('Instantiating the map object');
+
+			if (!elementId) {
+				elementId = this.mapElement;
+			}
+ 			if (this.mapType == 'mapbox') {
+ 				this._mbInitMap(options, elementId);
+ 			} else if (this.mapType == 'mapquest') {
+ 				this._mqInitMap(options);
+ 			}
+
+		    return this;
+ 		},
+
+ 		/**
+ 		 * Start the mapbox
+ 		 * @param object options
+ 		 * @param string elementId
+ 		 * @return CORUN
+ 		 */
+ 		this._mbInitMap = function(options, elementId) {
  			// Set the options
  			if (!options) {
  				options = {
  					zoomControl: false
  				};
  			}
+			
+			this.map = L.mapbox.map(elementId, this.mapboxId, options);
+ 			
+		    return this;
+ 		}
+
+ 		/**
+ 		 * Start the Mapquest
+ 		 * @param object options
+ 		 * @return CORUN
+ 		 */
+ 		this._mqInitMap = function(options) {
+ 			if (!options) {
+ 				options = {
+ 					elt: this.mapElement,
+ 					zoom: 15,
+ 					bestFitMargin: 1,
+ 					zoomOnDoubleClick: false,
+ 					mtype: 'map'
+ 				}
+ 			}
  			// Start the map
-			this.map = L.mapbox.map(this.mapElement, this.mapboxId, options);
+ 			this.map = new MQA.TileMap(options);
+
+ 			return this;
+ 		}
+
+		/**
+ 		 * Locate the user on the map
+ 		 * @return CORUN
+ 		 */
+ 		this.mapLocate = function() {
+ 			// Debug
+			this.debug('Locating the current user');
+ 			if (this.mapType == 'mapbox') {
+ 				this._mbMapLocate();
+ 			} else if (this.mapType == 'mapquest') {
+ 				this._mqMapLocate();
+ 			}
 
 		    return this;
  		},
 
-		/**
+ 		/**
  		 * Locate the user on the mapbox
  		 * @return CORUN
  		 */
- 		this.mapLocate = function() {
+ 		this._mbMapLocate = function() {
  			if (this.map) {
 			    if (!navigator.geolocation) {
 			        // Ask to change system prefs
@@ -378,6 +566,81 @@
 			    }
 
 				this.initGeoListener();
+			} else {
+	 			// Debug
+				this.debug('Map not initialized', 'high');
+			}
+			return this;
+ 		}
+
+ 		/**
+ 		 * Locate the user on the mapquest
+ 		 * @return CORUN
+ 		 */
+ 		this._mqMapLocate = function() {
+ 			if (this.map) {
+			    if (!navigator.geolocation) {
+			        // Ask to change system prefs
+			        //alert('geolocation is not available. please update your settings by going here');
+			    } else {
+					navigator.geolocation.getCurrentPosition(function(position) {
+		 				if (position) {
+					    	var currentLocation = new MQA.Poi({
+					    		lat: position.latitude,
+					    		lng: position.longitude
+					    	});
+		 					self.map.addShape(currentLocation);
+		 					self.map.setCenter({ lat: position.latitude, lng: position.longitude });
+		 				}
+		 			});
+			    }
+
+				this.initGeoListener();
+			} else {
+	 			// Debug
+				this.debug('Map not initialized', 'high');
+			}
+			return this;
+ 		},
+
+ 		/**
+ 		 * Draw the route on the map
+ 		 * @param array mapdata
+ 		 * @return CORUN
+ 		 */
+ 		this.mapDrawRoute = function(mapdata) {
+ 			if (this.mapType == 'mapbox') {
+ 				this._mbMapDrawRoute(mapdata);
+ 			} else if (this.mapType == 'mapquest') {
+ 				this._mqMapDrawRoute(mapdata);
+ 			}
+ 		},
+
+ 		/**
+ 		 * Draw the route on mapquest
+ 		 * @param array mapdata
+ 		 * @return CORUN
+ 		 */
+ 		this._mqMapDrawRoute = function(mapdata) {
+ 			if (this.map) {
+
+				var LatLng = [];
+
+				MQA.withModule('directions', function() {
+					for (var i in mapdata) {
+	 					var data = mapdata[i];
+	 					var coords = data['coords'];
+	 					if (i % 30 == 0)
+	 					{
+							LatLng.push({ latLng: { lat: coords.latitude, lng: coords.longitude }});
+							self.map.setCenter({ lat: coords.latitude, lng: coords.longitude });
+
+	 					}
+	 				}
+					/*Uses the MQA.TileMap.addRoute function (added to the TileMap with the directions module)
+					passing in an array of location objects as the only parameter.*/
+					self.map.addRoute(LatLng);
+				});
 			}
 			return this;
  		},
@@ -387,8 +650,7 @@
  		 * @param array mapdata
  		 * @return CORUN
  		 */
- 		this.mapDrawRoute = function(mapdata) {
- 			console.log(mapdata);
+ 		this._mbMapDrawRoute = function(mapdata) {
  			if (this.map) {
 
 				var LatLng = [];
@@ -398,14 +660,13 @@
  				for (var i in mapdata) {
  					var data = mapdata[i];
  					var coords = data['coords'];
- 					if (coords.accuracy >= 70 && coords.accuracy < 1000)
+ 					if (coords.accuracy >= 50 && coords.accuracy <= 100)
  					{
 	 					// Some tom foolery going on here
 	 					//var lonAccuracyCheck = Math.abs(Math.abs(_lastLon) - Math.abs(coords.longitude)) < 0.0002;
 	 					//var latAccuracyCheck = Math.abs(Math.abs(_lastLat) - Math.abs(coords.latitude)) < 0.0002;
 						//if (lonAccuracyCheck && latAccuracyCheck)
 						//{
- 							console.log(coords);
 							LatLng.push(new L.LatLng(coords.latitude, coords.longitude));
 						//}
 
@@ -413,20 +674,40 @@
 	 					_lastLat = coords.latitude;
  					}
  				}
+ 				var polylineOptions = {
+ 					color: 'red',
+ 					smoothFactor: 10,	
+ 				};
 
-				var polyline = L.polyline(LatLng, {color: 'red'}).addTo(this.map);
+				var polyline = L.polyline(LatLng, polylineOptions).addTo(this.map);
 
 				this.map.fitBounds(polyline.getBounds());
 			}
 			return this;
  		},
 
+ 		this.cacheMapImage = function() {
+			var map = this.map;
+			leafletImage(map, function(err, canvas) {
+			    // now you have canvas
+			    // example thing to do with that canvas:
+			    var img = document.createElement('img');
+			    var dimensions = map.getSize();
+			    img.width = dimensions.x;
+			    img.height = dimensions.y;
+			    img.src = canvas.toDataURL();
+			    document.getElementById('images').innerHTML = '';
+			    document.getElementById('images').appendChild(img);
+			});
+ 			return this;
+ 		}
+
  		/**
  		 * Begin the countdown and start the run if needed
  		 * @return CORUN
  		 */
  		this.startCountdown = function() {
- 			console.log('Countdown started');
+ 			this.debug('Countdown started');
 
  			self.startAnimateToolbar();
 
@@ -454,7 +735,7 @@
  		 * @return CORUN
  		 */
  		this.stopCountdown = function() {
- 			console.log('Countdown stopped: ' + this._countdown + ' sec');
+ 			this.debug('Countdown stopped: ' + this._countdown + ' sec');
 
  			clearInterval(this._countdownInstance);
 
@@ -512,8 +793,8 @@
  				if (self._runTime % (self.runCacheTimeout / 1000) == 0) {
 
  					self.setMapData(self._runGpsData);
- 					console.log('Saved run session cache');
- 					console.log(self.getMapData());
+ 					this.debug('Saved run session cache');
+ 					this.debug(self.getMapData());
  				}
  			}, 1000);
  			return this;
@@ -534,7 +815,7 @@
  		 * @return CORUN
  		 */
  		this.startRun = function() {
- 			console.log('Run started');
+ 			this.debug('Run started');
  			// Restart GPS data (for now)
  			this._runGpsData = [];
  			
@@ -552,12 +833,16 @@
  		this._watchPosition = function() {
  			navigator.geolocation.getCurrentPosition(function(position) {
  				if (position) {
-	 				console.log(position);
+	 				this.debug(position);
 	 				// @TODO Check for accuracy, duplicate positions (within a certain threshold)
 
 	 				// Store the position
 	 				self._runGpsData.push(position);
  				}
+ 			}, function(error) {
+
+ 			}, {
+ 				enableHighAccuracy: true
  			});
 
  			return this;
@@ -568,7 +853,7 @@
  		 * @return CORUN
  		 */
  		this.stopRun = function() {
- 			console.log('Stopping run');
+ 			this.debug('Stopping run');
  			
  			this.stopRunToolbar();
 
@@ -602,18 +887,20 @@
  		 * @return string|json
 		 */
 		this.getCache = function(key, json) {
+			this.debug('Getting "' + key + '" from cache');
 			if (!json) json = false;
-			// Check angular first
-			if (this._corunSession) {
+
+			// Check localStorage first
+			if (this.cache[key] !== undefined) {
+				return this.cache[key];
+			// Resort to angular (experimental)
+			} else if (this._corunSession) {
 				for(var i in this._corunSession) {
 					var data = this._corunSession[i];
 					if (data[key] !== undefined) {
 						return data[key];
 					}
 				}
-			// Resort to localStorage
-			} else if (this.cache[key] !== undefined) {
-				return this.cache[key];
 			}
 			return (json) ? '{}' : '';
 		},
@@ -653,6 +940,63 @@
 		    }
 			
 			return returnElems;
+		},
+
+		/**
+		 * Logs a message to the console
+		 * @param string message
+		 * @param string priority; Low (Default) | Normal | High
+		 * @param boolean labels
+		 * @param boolean timestamps
+		 * @return CORUN
+		 */
+		this.debug = function(message, priority, labels, timestamps) {
+			if (this.debugging) {
+
+				// Throw an error to trigger the stack
+				if (!this._err) this._err = new Error();
+				// Count the stack objects
+				var count = 0;
+				if (this._err.stack) {
+					// split by newlines, subtract the header (Error at) and the footer (Error url)
+					count = (this._err.stack.split("\n").length) - 2;
+				}
+
+				// Display the debug log if we're within the debugLevel scope
+				if (count <= this.debugLevel) {
+					if (!priority) {
+						priority = 'low';
+					}
+					if (!labels) {
+						labels = true;
+					}
+					if (!timestamps) {
+						timestamps = true;
+					}
+
+					var date = new Date();
+					var timestamp = (timestamps) ? '[' +  date.toUTCString() + '] ' : '';
+
+					switch(priority) {
+						case 'low' :
+							var label = (labels) ? timestamp + 'Log: ' : timestamp;
+							console.log(label + message);
+							break;
+
+						case 'normal' :
+							var label = (labels) ? timestamp + 'Warning: ' : timestamp;
+							console.warn(label + message);
+							break;
+
+						case 'high' :
+							var label = (labels) ? timestamp + 'Error: ' : timestamp;
+							console.error(label + message);
+							break;
+					}
+				}
+			}
+
+			return this;
 		}
 
 		return this;

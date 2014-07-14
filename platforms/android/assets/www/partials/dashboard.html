@@ -1,8 +1,20 @@
 <div ng-include src="'partials/_header.html'"></div>
-Dashboard
-
-<ul>
-	<li ng-repeat="item in corun.runs">	
-		<a ng-href="#/run/edit/{{ item.id }}">Edit Run #{{ item.id }} </a>
-	</li>
-</ul>
+<div class="topcoat-list">
+	<ul class="topcoat-list__container">
+		<li class="topcoat-list__item clearfix" ng-repeat="run in corun.runs">
+			<ul class="map-meta-buttons">
+				<li>
+					<button class="topcoat-icon-button">
+						<span class="topcoat-icon topcoat-icon--heart"></span>
+					</button>
+				</li>
+				<li>
+					<button class="topcoat-icon-button">
+						<span class="topcoat-icon topcoat-icon--challenge"></span>
+					</button>
+				</li>
+			</ul>
+			<div class="map" id="map-{{ run.id }}"></div>
+		</li>
+	</ul>
+</div>

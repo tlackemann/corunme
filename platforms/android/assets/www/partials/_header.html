@@ -1,26 +1,31 @@
-<header class="topcoat-navigation-bar">
-    <h1 class="topcoat-navigation-bar__item app-logo"><img src="img/header-logo.png"/></h1>
-</header>
+<div class="topcoat-navigation-bar">
+    <div class="topcoat-navigation-bar__item center full">
+        <a href="#" class="topcoat-icon topcoat-icon--refresh" id="refresh"></a>
+        <span class="topcoat-navigation-bar__title app-logo"><img src="img/header-logo.png"/></span>
+    </div>
+</div>
+
+
 <div class="topcoat-tab-bar full" id="submenu" ng-hide="hideSubmenu">
    <label class="topcoat-tab-bar__item">
      <input type="radio" name="topcoat" ng-checked="corunSubmenu == '/'">
-     <a ng-href="#/" class="topcoat-tab-bar__button full"><img src="img/icon-home.png"/></a>
+     <a ng-href="#/" class="topcoat-tab-bar__button full"><span class="topcoat-icon topcoat-icon--home"></span></a>
    </label>
    <label class="topcoat-tab-bar__item">
      <input type="radio" name="topcoat" ng-checked="corunSubmenu == '/profile'">
-     <a ng-href="#/profile" class="topcoat-tab-bar__button full"><img src="img/icon-profile.png"/></a>
+     <a ng-href="#/profile" class="topcoat-tab-bar__button full"><span class="topcoat-icon topcoat-icon--profile"></span></a>
    </label>
    <label class="topcoat-tab-bar__item">
      <input type="radio" name="topcoat" ng-checked="corunSubmenu == '/run'">
-     <a ng-href="#/run" class="topcoat-tab-bar__button full"><img src="img/icon-run.png"/></a>
+     <a ng-href="#/run" class="topcoat-tab-bar__button full"><span class="topcoat-icon topcoat-icon--run"></span></a>
    </label>
    <label class="topcoat-tab-bar__item">
      <input type="radio" name="topcoat" ng-checked="corunSubmenu == '/network'">
-     <a class="topcoat-tab-bar__button full"><img src="img/icon-network.png"/></a>
+     <a class="topcoat-tab-bar__button full"><span class="topcoat-icon topcoat-icon--network"></span></a>
    </label>
    <label class="topcoat-tab-bar__item">
      <input type="radio" name="topcoat" ng-checked="corunSubmenu == '/settings'">
-     <a ng-href="#/settings" class="topcoat-tab-bar__button full"><img src="img/icon-settings.png"/></a>
+     <a ng-href="#/settings" class="topcoat-tab-bar__button full"><span class="topcoat-icon topcoat-icon--settings"></span></a>
    </label>
 </div>
 

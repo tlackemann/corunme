@@ -104,26 +104,42 @@
 	"buffers":
 	[
 		{
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/UserController.php",
+			"settings":
+			{
+				"buffer_size": 2217,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_11_07_023113_create_user_logins_table.php",
+			"settings":
+			{
+				"buffer_size": 593,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Login.php",
+			"settings":
+			{
+				"buffer_size": 387,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "/Applications/MAMP/htdocs/corunme-api/app/models/User.php",
 			"settings":
 			{
-				"buffer_size": 1182,
+				"buffer_size": 1286,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/RunController.php",
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/LoginController.php",
 			"settings":
 			{
-				"buffer_size": 1219,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024729_create_runs_table.php",
-			"settings":
-			{
-				"buffer_size": 898,
+				"buffer_size": 1014,
 				"line_ending": "Unix"
 			}
 		},
@@ -136,51 +152,34 @@
 			}
 		},
 		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Run.php",
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/RunController.php",
 			"settings":
 			{
-				"buffer_size": 365,
+				"buffer_size": 2989,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/UserController.php",
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/BaseController.php",
 			"settings":
 			{
-				"buffer_size": 1801,
+				"buffer_size": 1010,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Role.php",
-			"settings":
-			{
-				"buffer_size": 380,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/database/seeds/DatabaseSeeder.php",
-			"settings":
-			{
-				"buffer_size": 791,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Applications/MAMP/htdocs/corunme-api/app/views/user/show.blade.php",
-			"settings":
-			{
-				"buffer_size": 31,
-				"line_ending": "Unix",
-				"name": "<?php"
 			}
 		},
 		{
 			"file": "/Applications/MAMP/htdocs/corunme-api/app/routes.php",
 			"settings":
 			{
-				"buffer_size": 935,
+				"buffer_size": 879,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Applications/MAMP/htdocs/corunme-api/app/filters.php",
+			"settings":
+			{
+				"buffer_size": 2963,
 				"line_ending": "Unix"
 			}
 		}
@@ -194,14 +193,6 @@
 			[
 				"save",
 				"Project: Save As"
-			],
-			[
-				"add",
-				"Project: Add Folder"
-			],
-			[
-				"close",
-				"Project: Close"
 			]
 		],
 		"width": 392.0
@@ -224,17 +215,17 @@
 	},
 	"file_history":
 	[
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_030223_create_roles_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_025246_create_users_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_025029_create_user_photos_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024729_create_runs_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024622_create_encouragements_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024443_create_event_comments_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024103_create_events_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_022800_create_challenges_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/controllers/UserController.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_023257_create_rules_table.php",
-		"/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_023453_create_conditions_table.php",
+		"/Applications/MAMP/htdocs/corunme-api/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Response.php",
+		"/Applications/MAMP/htdocs/corunme-api/composer.json",
+		"/Applications/MAMP/htdocs/corunme-api/app/routes.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/config/database.php",
+		"/Applications/MAMP/htdocs/corunme-api/vendor/league/oauth2-server/src/League/OAuth2/Server/Storage/ScopeInterface.php",
+		"/Applications/MAMP/htdocs/corunme-api/vendor/league/oauth2-server/src/League/OAuth2/Server/Storage/ClientInterface.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/models/ClientModel.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/models/SessionModel.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/models/ScopeModel.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/controllers/OauthController.php",
+		"/Applications/MAMP/htdocs/corunme-api/app/controllers/PhotoController.php",
 		"/Applications/MAMP/htdocs/magento_ee/app/etc/local.xml.phpunit",
 		"/Applications/MAMP/htdocs/magento_ee/test/CatalogProductModelTest.php",
 		"/Applications/MAMP/htdocs/magento_ee/app/etc/config.xml",
@@ -314,23 +305,24 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"text",
-			"lat",
-			"start",
-			"Modified",
-			"post",
-			"login",
-			"Role",
-			"User",
-			"user",
-			"');\n",
-			"protected",
-			"photo",
-			"user",
-			"user_photos",
-			"encouragements",
-			"challenges",
+			" $",
+			";\n",
 			"();\n",
+			"response",
+			"run",
+			");\n",
+			"make",
+			"n make",
+			"Access-Control-Allow-Methods",
+			"$response->headers->set",
+			"'*');",
+			";\n",
+			"{\n",
+			"no",
+			"    	\n",
+			");",
+			"	\n",
+			"{\n	    // Retrieve the auth params from the user's session\n	    $params['client_id'] = Session::get('client_id');\n	    $params['client_details'] = Session::get('client_details');\n	    $params['redirect_uri'] = Session::get('redirect_uri');\n	    $params['response_type'] = Session::get('response_type');\n	    $params['scopes'] = Session::get('scopes');\n\n	    // Check that the auth params are all present\n	    foreach ($params as $key=>$value) {\n	        if ($value === null) {\n	            // Throw an error because an auth param is missing - don't\n	            //  continue any further\n	        }\n	    }\n\n	    // Process the sign-in form submission\n	    if (Input::get('signin') !== null) {\n	        try {\n\n	            // Get username\n	            $u = Input::get('username');\n	            if ($u === null || trim($u) === '') {\n	                throw new Exception('please enter your username.');\n	            }\n\n	            // Get password\n	            $p = Input::get('password');\n	            if ($p === null || trim($p) === '') {\n	                throw new Exception('please enter your password.');\n	            }\n\n	            // Verify the user's username and password\n	            // Set the user's ID to a session\n\n	        } catch (Exception $e) {\n	            $params['error_message'] = $e->getMessage();\n	        }\n	    }\n\n	    // Get the user's ID from their session\n	    $params['user_id'] = Session::get('user_id');\n\n	    // User is signed in\n	    if ($params['user_id'] !== null) {\n\n	        // Redirect the user to /oauth/authorise route\n	        return Redirect::to('oauth/authorise');\n\n	    }\n\n	    // User is not signed in, show the sign-in form\n	    else {\n	        return View::make('oauth.signin', $params);\n	    }\n	}",
 			"255",
 			"sql",
 			"mysq",
@@ -440,8 +432,7 @@
 			"tom-load-more",
 			"pagePadd",
 			"tom-tile",
-			"resize",
-			"tom-page"
+			"resize"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -459,24 +450,52 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/models/User.php",
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/UserController.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1182,
+						"buffer_size": 2217,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6,
-								6
+								1633,
+								1607
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1421.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_11_07_023113_create_user_logins_table.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 593,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								584,
+								584
 							]
 						],
 						"settings":
@@ -491,53 +510,25 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/RunController.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1219,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								520,
-								520
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 39.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 2,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/database/migrations/2013_10_29_024729_create_runs_table.php",
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Login.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 898,
+						"buffer_size": 387,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								549,
-								549
+								372,
+								372
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -548,6 +539,62 @@
 				},
 				{
 					"buffer": 3,
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/models/User.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1286,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1277,
+								1277
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/LoginController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1014,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								439,
+								439
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/HomeController.php",
 					"semi_transient": true,
 					"settings":
@@ -575,49 +622,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Run.php",
+					"buffer": 6,
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/RunController.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 365,
+						"buffer_size": 2989,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								262,
-								262
-							]
-						],
-						"settings":
-						{
-							"auto_name": "",
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/UserController.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1801,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1637,
-								1562
+								1067,
+								1067
 							]
 						],
 						"settings":
@@ -626,55 +644,26 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 847.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/models/Role.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 380,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								372,
-								372
-							]
-						],
-						"settings":
-						{
-							"auto_name": "",
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 533.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/database/seeds/DatabaseSeeder.php",
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/controllers/BaseController.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 791,
+						"buffer_size": 1010,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								791,
-								791
+								893,
+								893
 							]
 						],
 						"settings":
@@ -690,24 +679,23 @@
 				},
 				{
 					"buffer": 8,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/views/user/show.blade.php",
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/routes.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 31,
+						"buffer_size": 879,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								28,
-								28
+								501,
+								501
 							]
 						],
 						"settings":
 						{
-							"auto_name": "<?php",
 							"syntax": "Packages/PHP/PHP.tmLanguage"
 						},
 						"translation.x": 0.0,
@@ -718,24 +706,26 @@
 				},
 				{
 					"buffer": 9,
-					"file": "/Applications/MAMP/htdocs/corunme-api/app/routes.php",
+					"file": "/Applications/MAMP/htdocs/corunme-api/app/filters.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 935,
+						"buffer_size": 2963,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								598,
-								598
+								938,
+								938
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.tmLanguage"
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -796,6 +786,10 @@
 		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"",
+				"/Applications/MAMP/htdocs/sublime-projects/raffi.sublime-project"
+			]
 		],
 		"width": 380.0
 	},

@@ -2,19 +2,15 @@
 
 <div id="runedit">
 <form ng-submit="editRun()">
-	<fieldset>
+	
 		<label for="name">Name your run</label>
 		<input type="text" ng-model="run.title" class="topcoat-text-input full" placeholder="text" value="">
-	</fieldset>
-	<fieldset>
-		<label for="name">Map Data</label>
-		<textarea ng-model="run.map_data"></textarea>
-	</fieldset>
-	<fieldset>
+	
+	
 		<div id="map"></div>
-	</fieldset>
+	
 	<fieldset class="form-actions">
 		<input type="submit" value="Submit" />
-	</fieldset>
+	
 </form>			
 </div>

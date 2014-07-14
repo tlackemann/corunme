@@ -1,7 +1,10 @@
 <div ng-include src="'partials/_header.html'"></div>
 
-<h1>User</h1>
-{{ userData }}
-
-<h1>Map Data</h1>
-{{ mapData }}
+<div class="topcoat-list">
+  <h3 class="topcoat-list__header">User</h3>
+  <ul class="topcoat-list__container">
+    <li class="topcoat-list__item" ng-repeat="(key, value) in userData">
+      <strong>{{ key }}: </strong><span>{{ value }}</span>
+    </li>
+  </ul>
+</div>

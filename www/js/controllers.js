@@ -1,16 +1,62 @@
 
 'use strict';
 
+/**
+ * Controls the backend work for all user logic
+ *
+ */
+function UserController($scope, $http, $location) {
+
+  // Start the corun app
+  window.CORUN.init({
+    scope: $scope, 
+    http: $http, 
+    location: $location
+  });
+
+  // Check for logged in or redirect
+  if (window.CORUN.checkUser()) {
+    $location.path('/dashboard');
+  }
+
+  // Set the data for login
+  $scope.login = {
+    email: 'runner@example.com',
+    password: 'runner123'
+  };
+
+  // Login the user
+  $scope.loginUser = function() {
+    window.CORUN.oauthSignIn();
+  }
+}
+
+function RunCtrl() {
+
+}
+function RunEditCtrl() {
+
+}
+function SettingsCtrl() {
+
+}
+function ProfileCtrl() {
+
+}
+function UserLoginCtrl() {
+
+}
+
+
+/*
 function RunCtrl($scope, $http, $location, MapService) {
-  if (!window.CORUN.checkUser())
-  {
+  if (!window.CORUN.checkUser()) {
     $location.path('/login');
   }
 
   window.CORUN.initMap().mapLocate();
 
   $scope.corunSubmenu = $location.path();
-  console.log($location.path());
 
   $scope.submit = function() {
     window.CORUN.stopRun();
@@ -43,52 +89,47 @@ function SettingsCtrl($scope, $http, $location, UserService, MapService) {
   $scope.corunSubmenu = $location.path();
   $scope.mapData = window.CORUN.getMapData();
   $scope.userData = window.CORUN.getUser();
-  console.log($location.path());
 }
 
 function IndexCtrl($scope, $http, $location) {
-  if (!window.CORUN.checkUser())
-  {
+  // Check for a logged in user
+  if (!window.CORUN.checkUser()) {
     $location.path('/login');
   }
+  else {
 
-  var corun = JSON.parse(window.CORUN.getCache('run_feed', true));
+    // Instantiate the corun object from cache
+    var corun = window.CORUN.getFeed();
+
     // Add the images
-  for (var item in corun.runs) {
-    console.log(corun.runs[item]);
-    corun.runs[item].image = window.CORUN.getMapboxUrl(corun.runs[item].start_lon.toFixed(2) + ',' + corun.runs[item].start_lat.toFixed(2) + ',15' + '/300x250.png');
+    for (var item in corun.runs) {
+      corun.runs[item].image = '';
+    }
+
+    if (Object.size(corun) === 0) {
+      $http({
+          method: 'GET',
+          url: window.CORUN.getUrl('run?session=' + window.CORUN.getUser('session')),
+      }).success(function(data, status, headers, config) {
+        
+        // Handle the data & set the scopes
+        $scope.corun = window.CORUN.handleData(data);
+
+        // Save the feed cache
+        window.CORUN.setFeed($scope.corun);
+      })
+      .error(function(data, status, headers, config) {
+        $location.path('/login');
+      });
+    } else {
+      $scope.corun = corun;
+    }
+
+    // Explicitly set the map listener
+    window.CORUN.initMapListener();
+
+    $scope.corunSubmenu = $location.path();
   }
-
-  if (corun === undefined) {
-    $http({
-        method: 'GET',
-        url: window.CORUN.getUrl('run?session=' + window.CORUN.getUser('session')),
-    }).success(function(data, status, headers, config) {
-      
-      // Handle the data & set the scopes
-      $scope.corun = window.CORUN.handleData(data);
-
-      console.log("Corun Data");
-      console.log($scope.corun);
-
-      // Save the feed cache
-      window.CORUN.setCache('run_feed', JSON.stringify($scope.corun));
-      
-      // Start the map
-      //window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
-
-    })
-    .error(function(data, status, headers, config) {
-      $location.path('/login');
-    });
-  } else {
-    $scope.corun = corun;
-  }
-
-
-
-  $scope.corunSubmenu = $location.path();
-  console.log($location.path());
 }
 
 function ProfileCtrl($scope, $http, $location, UserService) {
@@ -98,11 +139,12 @@ function ProfileCtrl($scope, $http, $location, UserService) {
   }
   $scope.corunSubmenu = $location.path();
   $scope.user = window.CORUN.getUser();
-  console.log($scope.corunSubmenu);
 }
 
 function UserLoginCtrl($scope, $http, $location, UserService) {
-
+  if (window.CORUN.checkUser()) {
+    $location.path('/');
+  }
   // Submit the login form, set the session when present
   $scope.user = {};
   $scope.loginUser = function() {
@@ -115,19 +157,14 @@ function UserLoginCtrl($scope, $http, $location, UserService) {
       if (data.corun.data.success == 1) {
         // Save the user
         window.CORUN.setUser(data.corun.data.user);
-
         $location.path('/');
       }
       else
       {
         console.log("Error: Bad username/password");
       }
-
-      console.log("Success:" + data);
     })
     .error(function(data, status, headers, config) {
-      
-     console.log("Error:" + data);
     });
   };
 }
@@ -141,20 +178,34 @@ function RunEditCtrl($scope, $http, $location, $routeParams) {
   // Set the navigation
   $scope.corunSubmenu = '/run';
   $scope.hideSubmenu = true;
-  $http({
-      method: 'GET',
-      url: window.CORUN.getUrl('run/' + $routeParams.id),
+  $scope.image = window.CORUN.getCache('map_run_' + $routeParams.id);
+
+  if (!$scope.image) {
+    $http({
+        method: 'GET',
+        url: window.CORUN.getUrl('run/' + $routeParams.id),
+        
+    }).success(function(data, status, headers, config) {
+      $scope.run = data.corun.data.run;
+
+      window.CORUN.setCache('run_edit_' + $scope.run.id, JSON.stringify($scope.run));
       
-  }).success(function(data, status, headers, config) {
-    $scope.run = data.corun.data.run;
-    window.CORUN.setCache('run_edit_' + $scope.run.id, $scope.run);
-    // Start the map
-    window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
-  })
-  .error(function(data, status, headers, config) {
-    $scope.run = window.CORUN.getCache('run_edit_' + $routeParams.id);
-   console.log("Error:" + data);
-  });
+      // Start the map
+      window.CORUN.initMap().mapDrawRoute(JSON.parse($scope.run.map_data));
+
+      // Cache the map
+      // window.CORUN.cacheMapImage();
+
+    })
+    .error(function(data, status, headers, config) {
+      $scope.run = window.CORUN.getCache('run_edit_' + $routeParams.id);
+    });
+  } else {
+    var _map = document.getElementById('map');
+    var image = document.createElement('img');
+    image.src = $scope.image;
+    _map.appendChild(image);
+  }
 
   // Set the form data
   var d = new Date();
@@ -185,16 +236,10 @@ function RunEditCtrl($scope, $http, $location, $routeParams) {
       {
         console.log("Error: Bad username/password");
       }
-
-      console.log("Success:" + data);
     })
     .error(function(data, status, headers, config) {
       
-     console.log("Error:" + data);
     });
   };
-
-  console.log($routeParams);
-  console.log($location.path());
 }
-
+*/
